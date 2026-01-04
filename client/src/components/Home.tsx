@@ -1,6 +1,21 @@
+import { useEffect, useState } from "react";
 import PageHeading from "./PageHeading";
+import ProductListings from "./ProductListings";
+import type { ProductType } from "../types/product";
 
 const Home = () => {
+  const [products, setProducts] = useState<ProductType[] | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const response = await fetch(
+        "https://695a840a950475ada466f783.mockapi.io/api/v1/Stickers"
+      );
+      const data = await response.json();
+      setProducts(data);
+    })();
+  }, []);
+
   return (
     <div className="home-container">
       <PageHeading>
@@ -13,6 +28,7 @@ const Home = () => {
         occasion or interest. Start personalizing your world today with our
         unique and eye-catching stickers!
       </PageHeading>
+      <ProductListings products={products || null} />
     </div>
   );
 };
