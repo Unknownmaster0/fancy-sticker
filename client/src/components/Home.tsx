@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import PageHeading from "./PageHeading";
 import ProductListings from "./ProductListings";
+import { useTheme } from "../context/ThemeContext";
 import type { ProductType } from "../types/product";
 
 const Home = () => {
+  const { isDarkMode } = useTheme();
   const [products, setProducts] = useState<ProductType[] | null>(null);
 
   useEffect(() => {
@@ -17,7 +19,11 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="home-container">
+    <div
+      className={`max-w-5xl mx-auto px-6 py-10 transition-colors duration-300 ${
+        isDarkMode ? "bg-bg-dark text-white" : "bg-bg-light text-text-dark"
+      }`}
+    >
       <PageHeading>
         Stickers are a fun and creative way to express yourself, decorate your
         belongings, and add a personal touch to everyday items. Whether you're
