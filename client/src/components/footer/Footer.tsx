@@ -9,8 +9,8 @@ const Footer = () => {
     <footer
       className={`flex justify-center items-center py-8 px-4 border-t-2 border-primary-neon font-medium transition-all duration-300 ${
         isDarkMode
-          ? "bg-gradient-to-r from-[rgba(217,70,239,0.1)] via-transparent to-[rgba(6,182,212,0.1)] text-text-muted drop-shadow-[0_0_10px_rgba(217,70,239,0.2)]"
-          : "bg-gradient-to-r from-[rgba(217,70,239,0.05)] via-transparent to-[rgba(6,182,212,0.05)] text-text-light-muted drop-shadow-[0_0_5px_rgba(217,70,239,0.1)]"
+          ? "bg-linear-to-r from-[rgba(217,70,239,0.1)] via-transparent to-[rgba(6,182,212,0.1)] text-text-muted drop-shadow-[0_0_10px_rgba(217,70,239,0.2)]"
+          : "bg-linear-to-r from-[rgba(217,70,239,0.05)] via-transparent to-[rgba(6,182,212,0.05)] text-text-light-muted drop-shadow-[0_0_5px_rgba(217,70,239,0.1)]"
       }`}
     >
       Buit with{" "}
@@ -25,7 +25,7 @@ const Footer = () => {
         href="https://sagar-me.vercel.app/"
         target="_blank"
         rel="noreferrer"
-        className="bg-clip-text bg-gradient-to-r from-primary-neon to-secondary-neon font-bold px-2 no-underline transition-all duration-300 relative drop-shadow-[0_0_15px_rgba(217,70,239,0.5)] hover:drop-shadow-[0_0_20px_rgba(217,70,239,0.8),0_0_10px_rgba(6,182,212,0.6)] text-transparent"
+        className="bg-clip-text bg-linear-to-r from-primary-neon to-secondary-neon font-bold px-2 no-underline transition-all duration-300 relative drop-shadow-[0_0_15px_rgba(217,70,239,0.5)] hover:drop-shadow-[0_0_20px_rgba(217,70,239,0.8),0_0_10px_rgba(6,182,212,0.6)] text-transparent"
       >
         Sagar Singh
       </a>
