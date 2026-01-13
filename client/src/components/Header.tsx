@@ -19,7 +19,7 @@ const Header = () => {
   return (
     <header
       className={`sticky top-0 z-100 border-b-2 border-primary-neon backdrop-blur-xl shadow-[0_0_30px_rgba(217,70,239,0.3),inset_0_1px_0_rgba(217,70,239,0.1)] ${
-        isDarkMode ? "bg-[rgba(10,14,39,0.85)]" : "bg-[rgba(248,249,250,0.95)]"
+        isDarkMode ? "bg-[rgba(10,14,39,0.85)]" : "bg-[rgba(245,245,243,0.95)]"
       }`}
     >
       <div className="flex items-center justify-between mx-auto max-w-5xl px-6 py-4">

@@ -31,8 +31,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
         <img
           src={product.imageUrl}
           alt={product.name}
-          className="w-[70%] h-[70%] object-contain transition-transform duration-500 group-hover:scale-110"
-          style={{ width: "70%", height: "70%" }}
+          className="transition-transform duration-500 group-hover:scale-110"
         />
       </div>
       <div className="p-6">

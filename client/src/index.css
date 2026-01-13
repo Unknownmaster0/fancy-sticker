@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600;700&display=swap");
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Tailwind v4 Theme Configuration using @theme directive */
 @theme {
   /* Primary Color Palette - Neon Magenta */
@@ -55,8 +57,8 @@
   --color-text-main: #ffffff;
 
   /* Light Mode Colors */
-  --color-bg-light: #f8f9fa;
-  --color-card-light: #ffffff;
+  --color-bg-light: #f5f5f3;
+  --color-card-light: #fafaf8;
   --color-text-dark: #1a1a1a;
   --color-text-light-muted: #6b7280;
 
@@ -90,11 +92,16 @@
   --accent-orange: #fb923c;
 
   --bg-dark: #0a0e27;
+  --bg-light: #f5f5f3;
   --header-bg: rgba(10, 14, 39, 0.85);
+  --header-bg-light: rgba(245, 245, 243, 0.95);
   --card-bg: #1a1f3a;
+  --card-light: #fafaf8;
 
   --text-main: #ffffff;
   --text-muted: #a1a5b8;
+  --text-dark: #1a1a1a;
+  --text-light-muted: #6b7280;
 
   --border-color: rgba(217, 70, 239, 0.2);
   --shadow-neon: 0 0 30px rgba(217, 70, 239, 0.3);
@@ -108,326 +115,12 @@
 
 body {
   font-family: var(--font-family);
-  background-color: #0a0e27;
-  color: #ffffff;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
   margin: 0;
   padding: 0;
-  /* background-image: radial-gradient(
-      circle at 10% 20%,
-      rgba(217, 70, 239, 0.15),
-      transparent 50%
-    ),
-    radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.15), transparent 50%),
-    radial-gradient(
-      circle at 50% 50%,
-      rgba(236, 72, 153, 0.08),
-      transparent 60%
-    ); */
   min-height: 100vh;
   line-height: 1.6;
   transition: background-color 0.3s ease, color 0.3s ease,
     background-image 0.3s ease;
 }
-
-/* .header {
-  border-bottom: 2px solid var(--primary-neon);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background-color: var(--header-bg);
-  backdrop-filter: blur(20px);
-  box-shadow: var(--shadow-neon), inset 0 1px 0 rgba(217, 70, 239, 0.1);
-} */
-
-/* .container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 auto;
-  max-width: 1152px;
-  padding: var(--padding-y) var(--padding-x);
-} */
-
-/* .link {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-} */
-
-/* .fa-icon {
-  height: 32px;
-  width: 32px;
-  margin-right: 8px;
-  color: var(--secondary-neon);
-  filter: drop-shadow(0 0 8px var(--secondary-neon));
-} */
-
-/* .brand-title {
-  font-size: 24px;
-  font-weight: 800;
-  background: linear-gradient(
-    135deg,
-    var(--primary-neon),
-    var(--accent-bright),
-    var(--secondary-neon)
-  );
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: -0.5px;
-  text-transform: uppercase;
-  text-shadow: 0 0 30px rgba(217, 70, 239, 0.5);
-} */
-
-/* .eazynav {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background: var(--card-bg);
-  box-shadow: 0 10px 15px var(--shadow-color);
-  padding: var(--padding-y) 0;
-  z-index: 10;
-} */
-
-/* .eazynav.open {
-  display: block;
-} */
-
-/* .eazynav ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  gap: 32px;
-} */
-
-/* @media (min-width: 1024px) {
-  .eazynav {
-    display: flex;
-    position: static;
-    width: auto;
-    box-shadow: none;
-    padding: 0;
-    background: transparent;
-  }
-} */
-
-/* .navLink {
-  display: block;
-  text-align: center;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-} */
-
-/* .navLink::before {
-  content: "";
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(
-    to right,
-    var(--secondary-neon),
-    var(--primary-neon)
-  );
-  transition: width 0.3s ease;
-} */
-
-/* .navLink:hover {
-  color: var(--text-main);
-  text-shadow: 0 0 10px var(--secondary-neon);
-} */
-
-/* .navLink:hover::before {
-  width: 100%;
-} */
-
-/* .home-container,
-.product-listings-container {
-  max-width: 1152px;
-  margin: 0 auto;
-  padding: 2.5rem 1.5rem;
-} */
-
-/* .page-title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  text-align: center;
-  margin-bottom: 1rem;
-  background: linear-gradient(
-    135deg,
-    var(--primary-neon) 0%,
-    var(--accent-bright) 30%,
-    var(--secondary-neon) 100%
-  );
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-transform: uppercase;
-  letter-spacing: -1px;
-} */
-
-/* .page-heading-container {
-  text-align: center;
-  max-width: 750px;
-  margin: 0 auto;
-  padding-bottom: 2rem;
-} */
-
-/* .page-heading-paragraph {
-  font-size: 1rem;
-  color: var(--text-muted);
-  line-height: 1.5;
-} */
-
-/* .product-card {
-  background-color: var(--card-bg);
-  border: 1.5px solid var(--border-color);
-  border-radius: 24px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-} */
-
-/* .product-card:hover {
-  transform: translateY(-15px) scale(1.02);
-  border-color: var(--primary-neon);
-  box-shadow: 0 0 40px var(--shadow-neon), 0 0 20px var(--shadow-cyan);
-} */
-
-/* .product-card-image-container {
-  height: 18rem;
-  background: linear-gradient(135deg, #1a1f3a 0%, #2a1f4a 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-} */
-
-/* .product-card-image-container::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  right: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(217, 70, 239, 0.1), transparent);
-  animation: pulse 4s ease-in-out infinite;
-} */
-
-/* @keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.5;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.8;
-  }
-} */
-
-/* .product-card-image {
-  width: 70%;
-  height: 70%;
-  object-fit: contain;
-  transition: transform 0.5s ease;
-} */
-
-/* .product-card:hover .product-card-image {
-  transform: scale(1.1) rotate(5deg);
-} */
-
-/* .product-card-details {
-  padding: 1.5rem;
-} */
-
-/* .product-card-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-main);
-  margin-bottom: 0.5rem;
-  background: linear-gradient(
-    135deg,
-    var(--primary-neon),
-    var(--secondary-neon)
-  );
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-} */
-
-/* .product-card-description {
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  margin-bottom: 1.5rem;
-} */
-
-/* .product-card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-} */
-
-/* .product-card-price {
-  background: linear-gradient(
-    135deg,
-    var(--primary-neon),
-    var(--accent-bright)
-  );
-  color: #fff;
-  font-weight: 800;
-  padding: 0.6rem 1.5rem;
-  border-radius: 99px;
-  font-size: 0.95rem;
-  box-shadow: 0 0 15px rgba(217, 70, 239, 0.4);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-} */
-
-/* .product-listings-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2.5rem;
-} */
-
-/* @media (min-width: 640px) {
-  .product-listings-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-} */
-
-/* @media (min-width: 1024px) {
-  .product-listings-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-} */
-
-/* .product-listings-empty {
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: 700;
-  background: linear-gradient(
-    135deg,
-    var(--primary-neon),
-    var(--secondary-neon)
-  );
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  padding: 5rem 0;
-} */
-
-/* .btn-primary {
-  background-color: black !important;
-  border: black !important;
-} */
-
-/* .alert-primary {
-  background-color: black !important;
-} */

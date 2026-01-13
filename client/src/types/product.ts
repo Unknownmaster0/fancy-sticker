@@ -3,9 +3,10 @@ export type ProductType = {
   name: string;
   price: string;
   imageUrl: string;
-  keywords?: string;
+  popularity: string;
   description: string;
   currency: string;
+  keywords?: string;
   tags?: string[];
   stock?: number;
   category?: string;

@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  type ReactNode,
+  useEffect,
+} from "react";
 
 interface ThemeContextType {
   isDarkMode: boolean;
@@ -9,6 +15,16 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // Apply dark class to document root for Tailwind dark mode
+  useEffect(() => {
+    const root = document.documentElement;
+    if (isDarkMode) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [isDarkMode]);
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);

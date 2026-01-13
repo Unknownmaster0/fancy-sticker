@@ -3,20 +3,45 @@ import PageHeading from "./PageHeading";
 import ProductListings from "./ProductListings";
 import { useTheme } from "../context/ThemeContext";
 import type { ProductType } from "../types/product";
+import apiClient from "../api/apiClient";
 
 const Home = () => {
   const { isDarkMode } = useTheme();
   const [products, setProducts] = useState<ProductType[] | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await apiClient.get<any>("/products");
+      setProducts(response.data);
+    } catch (error) {
+      setError("Failed to fetch products");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    (async () => {
-      const response = await fetch(
-        "https://695a840a950475ada466f783.mockapi.io/api/v1/Stickers"
-      );
-      const data = await response.json();
-      setProducts(data);
-    })();
+    fetchProducts();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="text-xl font-semibold">Loading products...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="text-xl text-red-500">Error: {error}</span>
+      </div>
+    );
+  }
 
   return (
     <div
