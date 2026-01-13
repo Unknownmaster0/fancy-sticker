@@ -20,3 +20,4 @@ coverage/
 *.class
 *.o
 *.exe
+fancystickerserver/data/*.mv.db
