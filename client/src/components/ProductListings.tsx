@@ -12,17 +12,17 @@ const ProductListings = ({ products }: { products: ProductType[] | null }) => {
   const [searchText, setSearchText] = useState<string>("");
   const [selectedSort, setSelectedSort] = useState<string>("Popularity");
 
-  const filterSortedProducts: ProductType[] | null = useMemo(() => {
+  const filterSortedProducts: ProductType[] = useMemo(() => {
     if (!products || products?.length === 0) return [];
 
     // search for the searchText in the name and description fields
-    let filteredProducts: ProductType[] | null = products?.filter(
+    let filteredProducts: ProductType[] = products?.filter(
       (product) =>
         product.name.toLowerCase().includes(searchText.toLowerCase()) ||
         product.description.toLowerCase().includes(searchText.toLowerCase())
     );
 
-    if (!filteredProducts || filteredProducts.length === 0) return products;
+    if (!filteredProducts || filteredProducts.length === 0) return [];
 
     // sort based on selectedSort
     return (
@@ -70,7 +70,9 @@ const ProductListings = ({ products }: { products: ProductType[] | null }) => {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
         {filterSortedProducts && filterSortedProducts.length > 0 ? (
-          filterSortedProducts.map((product, idx) => <ProductCard key={idx} product={product} />)
+          filterSortedProducts.map((product, idx) => (
+            <ProductCard key={idx} product={product} />
+          ))
         ) : (
           <p className="text-center text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r from-primary-neon to-secondary-neon py-20 col-span-full">
             {" "}
