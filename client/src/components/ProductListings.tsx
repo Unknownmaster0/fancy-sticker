@@ -22,8 +22,6 @@ const ProductListings = ({ products }: { products: ProductType[] | null }) => {
         product.description.toLowerCase().includes(searchText.toLowerCase())
     );
 
-    if (!filteredProducts || filteredProducts.length === 0) return [];
-
     // sort based on selectedSort
     return (
       filteredProducts &&

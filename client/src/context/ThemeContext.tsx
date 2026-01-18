@@ -4,6 +4,8 @@ import {
   useState,
   type ReactNode,
   useEffect,
+  useCallback,
+  useMemo,
 } from "react";
 
 interface ThemeContextType {
@@ -14,9 +16,18 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      const storedPreference = localStorage.getItem("isDarkMode");
+      if (storedPreference === "true") return true;
+      if (storedPreference === "false") return false;
+      // Respect system preference for first-time users
+      return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    }
+    return true;
+  });
 
-  // Apply dark class to document root for Tailwind dark mode
+  // Apply dark class to document root for Tailwind dark mode and persist preference
   useEffect(() => {
     const root = document.documentElement;
     if (isDarkMode) {
@@ -24,16 +35,22 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     } else {
       root.classList.remove("dark");
     }
+    localStorage.setItem("isDarkMode", String(isDarkMode));
   }, [isDarkMode]);
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-  };
+  // Memoize toggleTheme to prevent unnecessary function recreation
+  const toggleTheme = useCallback(() => {
+    setIsDarkMode((prev) => !prev);
+  }, []);
+
+  // Memoize context value to prevent unnecessary child re-renders
+  const value = useMemo(
+    () => ({ isDarkMode, toggleTheme }),
+    [isDarkMode, toggleTheme]
+  );
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 };
 
