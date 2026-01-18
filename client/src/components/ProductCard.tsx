@@ -1,12 +1,15 @@
 import type { ProductType } from "../types/product";
 import Price from "./Price";
 import { useTheme } from "../context/ThemeContext";
+import { Link } from "react-router-dom";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
   const { isDarkMode } = useTheme();
 
   return (
-    <div
+    <Link
+      to={`/products/${product.productId}`}
+      state={{ product }}
       className={`border-[1.5px] rounded-3xl overflow-hidden flex flex-col transition-all duration-500 hover:-translate-y-[-15px] hover:scale-[1.02] hover:border-primary-neon hover:shadow-[0_0_40px_rgba(217,70,239,0.3),0_0_20px_rgba(6,182,212,0.2)] ${
         isDarkMode
           ? "bg-card-bg border-[rgba(217,70,239,0.2)]"
@@ -51,7 +54,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

@@ -1,20 +1,19 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingBasket, faTags } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "../context/ThemeContext";
+import { Link, NavLink } from "react-router-dom";
 
 const Header = () => {
   const { isDarkMode, toggleTheme } = useTheme();
-
-  const navLinkStyleClass = `block text-center text-base font-semibold no-underline transition-all duration-300 relative after:content-[''] after:absolute after:-bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-secondary-neon after:to-primary-neon after:transition-all after:duration-300 hover:after:w-full ${
-    isDarkMode
-      ? "text-text-muted hover:text-white hover:drop-shadow-[0_0_10px_rgba(6,182,212,1)]"
-      : "text-text-light-muted hover:text-text-dark hover:drop-shadow-[0_0_10px_rgba(217,70,239,0.5)]"
-  }`;
 
   const darkThemeClass =
     "text-text-muted hover:text-white hover:drop-shadow-[0_0_10px_rgba(6,182,212,1)]";
   const lightThemeClass =
     "text-text-light-muted hover:text-text-dark hover:drop-shadow-[0_0_10px_rgba(217,70,239,0.5)]";
+
+  const navLinkStyleClass = `block text-center text-base font-semibold no-underline transition-all duration-300 relative after:content-[''] after:absolute after:-bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-secondary-neon after:to-primary-neon after:transition-all after:duration-300 hover:after:w-full ${
+    isDarkMode ? darkThemeClass : lightThemeClass
+  }`;
 
   return (
     <header
@@ -23,7 +22,7 @@ const Header = () => {
       }`}
     >
       <div className="flex items-center justify-between mx-auto max-w-5xl px-6 py-4">
-        <a href="/" className="flex items-center no-underline">
+        <Link to="/" className="flex items-center no-underline">
           <FontAwesomeIcon
             icon={faTags}
             className="w-8 h-8 mr-2 text-secondary-neon drop-shadow-[0_0_8px_rgba(6,182,212,1)] text-2xl"
@@ -31,7 +30,7 @@ const Header = () => {
           <span className="text-2xl font-bold uppercase bg-clip-text bg-linear-to-r from-primary-neon via-accent-bright to-secondary-neon tracking-tight drop-shadow-[0_0_30px_rgba(217,70,239,0.5)] text-transparent">
             Fancy Sticker
           </span>
-        </a>
+        </Link>
         <nav className="hidden lg:flex absolute lg:static top-full left-0 w-full lg:w-auto shadow-[0_10px_15px_rgba(0,0,0,0.2)] lg:shadow-none py-4 lg:py-0 z-10 lg:z-auto">
           <ul className="list-none m-0 p-0 flex gap-8 w-full lg:w-auto items-center">
             <li>
@@ -47,54 +46,64 @@ const Header = () => {
               </button>
             </li>
             <li>
-              <a
-                href="/"
-                className={`${navLinkStyleClass} ${
-                  isDarkMode ? darkThemeClass : lightThemeClass
-                }`}
+              <NavLink
+                to="/home"
+                className={({ isActive }) =>
+                  isActive
+                    ? `underline ${navLinkStyleClass}`
+                    : navLinkStyleClass
+                }
               >
                 Home
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/"
-                className={`${navLinkStyleClass} ${
-                  isDarkMode ? darkThemeClass : lightThemeClass
-                }`}
+              <NavLink
+                to="/about"
+                className={({ isActive }) =>
+                  isActive
+                    ? `underline ${navLinkStyleClass}`
+                    : navLinkStyleClass
+                }
               >
                 About
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/"
-                className={`${navLinkStyleClass} ${
-                  isDarkMode ? darkThemeClass : lightThemeClass
-                }`}
+              <NavLink
+                to="/contact"
+                className={({ isActive }) =>
+                  isActive
+                    ? `underline ${navLinkStyleClass}`
+                    : navLinkStyleClass
+                }
               >
                 Contact
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/"
-                className={`${navLinkStyleClass} ${
-                  isDarkMode ? darkThemeClass : lightThemeClass
-                }`}
+              <NavLink
+                to="/login"
+                className={({ isActive }) =>
+                  isActive
+                    ? `underline ${navLinkStyleClass}`
+                    : navLinkStyleClass
+                }
               >
                 Login
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/"
-                className={`${navLinkStyleClass} ${
-                  isDarkMode ? darkThemeClass : lightThemeClass
-                }`}
+              <NavLink
+                to="/cart"
+                className={({ isActive }) =>
+                  isActive
+                    ? `underline ${navLinkStyleClass}`
+                    : navLinkStyleClass
+                }
               >
                 <FontAwesomeIcon icon={faShoppingBasket} />
-              </a>
+              </NavLink>
             </li>
           </ul>
         </nav>
