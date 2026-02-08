@@ -1,5 +1,6 @@
 package org.example.fancystickerserver.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.fancystickerserver.dto.ContactRequestDto;
 import org.example.fancystickerserver.services.IContactService;
@@ -15,7 +16,7 @@ public class ContactController {
     private final IContactService contactService;
 
     @PostMapping
-    public String saveContact(@RequestBody ContactRequestDto contactRequestDto) {
+    public String saveContact(@Valid @RequestBody ContactRequestDto contactRequestDto) {
         boolean isSaved = contactService.saveContact(contactRequestDto);
         if (isSaved) {
             return "Request processed successfully";
