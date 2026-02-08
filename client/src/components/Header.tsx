@@ -2,9 +2,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingBasket, faTags } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "../context/ThemeContext";
 import { Link, NavLink } from "react-router-dom";
+import { useCart } from "../store/cart-context";
 
 const Header = () => {
   const { isDarkMode, toggleTheme } = useTheme();
+  const { totalQuantity } = useCart();
 
   const darkThemeClass =
     "text-text-muted hover:text-white hover:drop-shadow-[0_0_10px_rgba(6,182,212,1)]";
@@ -94,15 +96,14 @@ const Header = () => {
               </NavLink>
             </li>
             <li>
-              <NavLink
-                to="/cart"
-                className={({ isActive }) =>
-                  isActive
-                    ? `underline ${navLinkStyleClass}`
-                    : navLinkStyleClass
-                }
-              >
-                <FontAwesomeIcon icon={faShoppingBasket} />
+              <NavLink to="/cart" className={"relative text-primary-neon py-2"}>
+                <FontAwesomeIcon
+                  icon={faShoppingBasket}
+                  className="text-primary-neon w-6"
+                />
+                <div className="absolute -top-2 -right-5 bg-secondary-neon text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {totalQuantity}
+                </div>
               </NavLink>
             </li>
           </ul>

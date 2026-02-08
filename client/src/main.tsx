@@ -16,6 +16,7 @@ import { ThemeProvider } from "./context/ThemeContext.tsx";
 import Login from "./components/Login.tsx";
 import ErrorPage from "./components/ErrorPage.tsx";
 import ProductDetail from "./components/ProductDetail.tsx";
+import { CartProvider } from "./store/cart-context.tsx";
 
 const routeDefinition = createRoutesFromElements(
   <Route path="/" element={<App />} errorElement={<ErrorPage />}>
@@ -26,7 +27,7 @@ const routeDefinition = createRoutesFromElements(
     <Route path="/login" element={<Login />} />
     <Route path="/cart" element={<Cart />} />
     <Route path="/products/:id" element={<ProductDetail />} />
-  </Route>
+  </Route>,
 );
 
 const appRouter = createBrowserRouter(routeDefinition);
@@ -34,7 +35,9 @@ const appRouter = createBrowserRouter(routeDefinition);
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
-      <RouterProvider router={appRouter} />
+      <CartProvider>
+        <RouterProvider router={appRouter} />
+      </CartProvider>
     </ThemeProvider>
-  </StrictMode>
+  </StrictMode>,
 );
