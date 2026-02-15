@@ -2,7 +2,7 @@ package org.example.fancystickerserver.exception;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import org.example.fancystickerserver.controller.ErrorResponseDto;
+import org.example.fancystickerserver.dto.ErrorResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

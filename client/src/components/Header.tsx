@@ -1,12 +1,51 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingBasket, faTags } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAngleDown,
+  faShoppingBasket,
+  faTags,
+} from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "../context/ThemeContext";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../store/cart-context";
+import { useAuth } from "../store/auth-context";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 
 const Header = () => {
   const { isDarkMode, toggleTheme } = useTheme();
   const { totalQuantity } = useCart();
+  const { isAuthenticated, logOut } = useAuth();
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
+  const isAdmin = true; // Replace with actual admin check
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const toggleUserMenu = () => setIsUserMenuOpen((prev) => !prev);
+  const toggleAdminMenu = () => setIsAdminMenuOpen((prev) => !prev);
+
+  const handleLogout = (event: React.FormEvent) => {
+    event.preventDefault();
+    logOut();
+    toast.success("Logged out successfully!");
+    navigate("/home");
+  };
+
+  useEffect(() => {
+    setIsUserMenuOpen(false);
+    setIsAdminMenuOpen(false);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsUserMenuOpen(false);
+        setIsAdminMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+  }, [location.pathname]);
 
   const darkThemeClass =
     "text-text-muted hover:text-white hover:drop-shadow-[0_0_10px_rgba(6,182,212,1)]";
@@ -16,6 +55,8 @@ const Header = () => {
   const navLinkStyleClass = `block text-center text-base font-semibold no-underline transition-all duration-300 relative after:content-[''] after:absolute after:-bottom-[-5px] after:left-0 after:w-0 after:h-0.5 after:bg-gradient-to-r after:from-secondary-neon after:to-primary-neon after:transition-all after:duration-300 hover:after:w-full ${
     isDarkMode ? darkThemeClass : lightThemeClass
   }`;
+
+  const dropdownLinkClass = `block w-full text-left px-4 py-2 text-lg font-primary font-semibold text-gray-800 ${isDarkMode ? "text-light hover:bg-purple-100 hover:bg-gray-600" : "hover:bg-purple-100 hover:bg-gray-600"}`;
 
   return (
     <header
@@ -84,16 +125,93 @@ const Header = () => {
               </NavLink>
             </li>
             <li>
-              <NavLink
-                to="/login"
-                className={({ isActive }) =>
-                  isActive
-                    ? `underline ${navLinkStyleClass}`
-                    : navLinkStyleClass
-                }
-              >
-                Login
-              </NavLink>
+              {isAuthenticated ? (
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    onClick={toggleUserMenu}
+                    className="relative text-primary flex items-center gap-2"
+                  >
+                    <span className={navLinkStyleClass}>Hello John Doe</span>
+                    <FontAwesomeIcon
+                      icon={faAngleDown}
+                      className="text-primary-neon dark:text-light w-6 h-6"
+                    />
+                  </button>
+                  {isUserMenuOpen && (
+                    <div
+                      className={`absolute right-0 w-48 rounded-md shadow-lg z-20 transition ease-in-out duration-200 border border-primary-neon backdrop-blur-xl ${isDarkMode ? "bg-[rgba(10,14,39,0.95)]" : "bg-[rgba(245,245,243,0.98)]"}`}
+                    >
+                      <ul className="py-2">
+                        <li>
+                          <Link to="/profile" className={dropdownLinkClass}>
+                            Profile
+                          </Link>
+                        </li>
+                        <li>
+                          <Link to="/orders" className={dropdownLinkClass}>
+                            Orders
+                          </Link>
+                        </li>
+                        {isAdmin && (
+                          <li>
+                            <button
+                              onClick={toggleAdminMenu}
+                              className={`${dropdownLinkClass} flex items-center justify-between`}
+                            >
+                              Admin
+                              <FontAwesomeIcon
+                                icon={faAngleDown}
+                                className={`text-primary-neon w-6 h-6`}
+                              />
+                            </button>
+                            {isAdminMenuOpen && (
+                              <ul className="ml-4 mt-2 space-y-2">
+                                <li>
+                                  <Link
+                                    to="/admin/orders"
+                                    className={dropdownLinkClass}
+                                  >
+                                    Orders
+                                  </Link>
+                                </li>
+                                <li>
+                                  <Link
+                                    to="/admin/messages"
+                                    className={dropdownLinkClass}
+                                  >
+                                    Messages
+                                  </Link>
+                                </li>
+                              </ul>
+                            )}
+                          </li>
+                        )}
+
+                        <li>
+                          <Link
+                            to="/home"
+                            onClick={handleLogout}
+                            className={dropdownLinkClass}
+                          >
+                            Logout
+                          </Link>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    isActive
+                      ? `underline ${navLinkStyleClass}`
+                      : navLinkStyleClass
+                  }
+                >
+                  Login
+                </NavLink>
+              )}
             </li>
             <li>
               <NavLink to="/cart" className={"relative text-primary-neon py-2"}>

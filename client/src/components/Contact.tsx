@@ -2,27 +2,45 @@ import { useEffect, useRef } from "react";
 import {
   Form,
   useActionData,
-  useNavigate,
   useNavigation,
+  useSubmit,
   type ActionFunction,
 } from "react-router-dom";
 import PageTitle from "./PageTitle";
 import apiClient from "../api/apiClient";
 import { isAxiosError } from "axios";
+import { toast } from "react-toastify";
 
 const Contact = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
   const actionData = useActionData();
-  const navigate = useNavigate();
+  const submit = useSubmit();
 
   useEffect(() => {
     if (actionData?.success) {
       formRef.current?.reset();
-      navigate("/home");
+      toast.success("Your message has been submitted successfully!");
     }
   }, [actionData]);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!formRef.current) {
+      return;
+    }
+    const userConfirmed = window.confirm(
+      "Are you sure you want to submit the form?",
+    );
+
+    if (userConfirmed) {
+      const formData = new FormData(formRef.current); // Get form data
+      submit(formData, { method: "post" }); // Proceed with form submission
+    } else {
+      toast.info("Form submission cancelled.");
+    }
+  };
 
   const labelStyle =
     "block text-lg font-semibold text-primary-neon dark:text-light mb-2";
@@ -40,7 +58,12 @@ const Contact = () => {
       </p>
 
       {/* Contact Form */}
-      <Form method="POST" ref={formRef} className="space-y-6 max-w-3xl mx-auto">
+      <Form
+        method="POST"
+        ref={formRef}
+        onSubmit={handleSubmit}
+        className="space-y-6 max-w-3xl mx-auto"
+      >
         {/* Name Field */}
         <div>
           <label htmlFor="name" className={labelStyle}>
@@ -130,34 +153,27 @@ export default Contact;
 export const contactFormAction: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
 
-  // process the data here (e.g., send an email, store in database, etc.)
-  const name = formData.get("name");
-  const email = formData.get("email");
-  const mobileNumber = formData.get("mobileNumber");
-  const message = formData.get("message");
+  // process the data here
+  const contactData = {
+    name: formData.get("name"),
+    email: formData.get("email"),
+    mobileNumber: formData.get("mobileNumber"),
+    message: formData.get("message"),
+  };
 
   try {
-    await apiClient.post("/contacts", {
-      name,
-      email,
-      mobileNumber,
-      message,
-    });
+    await apiClient.post("/contacts", contactData);
     return { success: true };
   } catch (error) {
-    let errorTitle = "OOPs some error occured!!!";
     let errorMessage = "Something went wrong, Please try again...";
     let status: number | undefined = 500;
     if (isAxiosError(error)) {
-      errorTitle = error.name;
       errorMessage = error.message;
       status = error.status;
     } else if (error instanceof Error) {
       console.error("Error submitting contact form:", error.message);
-      errorTitle = error.name;
       errorMessage = error.message;
     }
-
     throw new Response(errorMessage, { status });
   }
 };

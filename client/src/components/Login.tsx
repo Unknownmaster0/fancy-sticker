@@ -1,18 +1,50 @@
-import { Link } from "react-router-dom";
+import {
+  Form,
+  Link,
+  useActionData,
+  useNavigate,
+  useNavigation,
+  type ActionFunction,
+} from "react-router-dom";
 import PageTitle from "./PageTitle";
+import apiClient from "../api/apiClient";
+import { useEffect } from "react";
+import { useAuth } from "../store/auth-context";
+import { toast } from "react-toastify";
 
 const Login = () => {
+  const actionData = useActionData();
+  const navigate = useNavigate();
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
+  const { logInSuccess } = useAuth();
+  const redirectPath = sessionStorage.getItem("redirectPath") || "/home";
+
+  useEffect(() => {
+    // console.log(actionData)
+    if (actionData && actionData.success) {
+      console.log("Login successful:", actionData);
+      logInSuccess(actionData.jwtToken, actionData.user);
+      navigate(redirectPath);
+    } else if (actionData?.errors) {
+      toast.error(
+        actionData.errors.message || "Login failed. Please try again.",
+      );
+    }
+  }, [actionData]);
+
   const labelStyle =
     "block text-lg font-semibold text-primary-neon dark:text-light mb-2";
   const textFieldStyle =
     "w-full px-4 py-2 text-base border rounded-md transition border-primary-neon dark:border-light focus:ring focus:ring-primary-neon dark:focus:ring-secondary-neon focus:outline-none text-text-dark dark:text-text-muted bg-white dark:bg-card-bg placeholder-text-light-muted dark:placeholder-text-muted";
+
   return (
     <div className="flex items-center justify-center font-primary py-12">
       <div className="bg-white dark:bg-card-bg shadow-lg rounded-lg max-w-md w-full px-8 py-6 drop-shadow-[0_0_15px_rgba(217,70,239,0.2)]">
         {/* Title */}
         <PageTitle title="Login" />
         {/* Form */}
-        <form className="space-y-6">
+        <Form method="POST" className="space-y-6">
           {/* Email Field */}
           <div>
             <label htmlFor="username" className={labelStyle}>
@@ -49,12 +81,13 @@ const Login = () => {
           <div>
             <button
               type="submit"
+              disabled={isSubmitting}
               className="w-full px-6 py-2 text-white dark:text-bg-dark text-xl rounded-md transition duration-200 font-semibold bg-primary-neon hover:brightness-110 dark:hover:brightness-90 drop-shadow-[0_0_15px_rgba(217,70,239,0.4)]"
             >
-              Login
+              {isSubmitting ? "Logging in..." : "Login"}
             </button>
           </div>
-        </form>
+        </Form>
 
         {/* Register Link */}
         <p className="text-center text-text-light-muted dark:text-text-muted mt-4">
@@ -72,3 +105,31 @@ const Login = () => {
 };
 
 export default Login;
+
+export const loginAction: ActionFunction = async ({ request }) => {
+  const data = await request.formData();
+
+  const loginData = {
+    username: data.get("username"),
+    password: data.get("password"),
+  };
+
+  try {
+    const response = await apiClient.post("/auth/login", loginData);
+    const { message, user, jwtToken } = response.data;
+    return { success: true, message, user, jwtToken };
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      return {
+        success: false,
+        errors: { message: "Invalid username or password" },
+      };
+    }
+    throw new Response(
+      error.response?.data?.message ||
+        error.message ||
+        "Failed to login. Please try again.",
+      { status: error.response?.status || 500 },
+    );
+  }
+};
