@@ -13,10 +13,16 @@ import About from "./components/About.tsx";
 import Contact, { contactFormAction } from "./components/Contact.tsx";
 import Cart from "./components/Cart.tsx";
 import { ThemeProvider } from "./context/ThemeContext.tsx";
-import Login from "./components/Login.tsx";
+import Login, { loginAction } from "./components/Login.tsx";
 import ErrorPage from "./components/ErrorPage.tsx";
 import ProductDetail from "./components/ProductDetail.tsx";
 import { CartProvider } from "./store/cart-context.tsx";
+import { ToastContainer, Bounce } from "react-toastify";
+import { AuthProvider } from "./store/auth-context.tsx";
+import Register, { registerAction } from "./components/Register.tsx";
+import Orders from "./components/Orders.tsx";
+import Profile from "./components/Profile.tsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
 const routeDefinition = createRoutesFromElements(
   <Route path="/" element={<App />} errorElement={<ErrorPage />}>
@@ -24,8 +30,13 @@ const routeDefinition = createRoutesFromElements(
     <Route path="/home" element={<Home />} loader={ProductFetchLoading} />
     <Route path="/about" element={<About />} />
     <Route path="/contact" element={<Contact />} action={contactFormAction} />
-    <Route path="/login" element={<Login />} />
+    <Route path="/login" element={<Login />} action={loginAction} />
+    <Route path="/register" element={<Register />} action={registerAction} />
     <Route path="/cart" element={<Cart />} />
+    <Route element={<ProtectedRoute />}>
+      <Route path="/orders" element={<Orders />} />
+      <Route path="/profile" element={<Profile />} />
+    </Route>
     <Route path="/products/:id" element={<ProductDetail />} />
   </Route>,
 );
@@ -34,10 +45,22 @@ const appRouter = createBrowserRouter(routeDefinition);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ThemeProvider>
-      <CartProvider>
-        <RouterProvider router={appRouter} />
-      </CartProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <CartProvider>
+          <RouterProvider router={appRouter} />
+        </CartProvider>
+      </ThemeProvider>
+    </AuthProvider>
+    <ToastContainer
+      position="top-center"
+      autoClose={3000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      draggable
+      pauseOnHover
+      theme={localStorage.getItem("isDarkMode") === "true" ? "dark" : "light"}
+      transition={Bounce}
+    />
   </StrictMode>,
 );

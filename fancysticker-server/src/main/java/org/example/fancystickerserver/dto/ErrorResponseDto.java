@@ -1,4 +1,4 @@
-package org.example.fancystickerserver.controller;
+package org.example.fancystickerserver.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
