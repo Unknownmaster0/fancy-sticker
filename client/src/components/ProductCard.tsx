@@ -1,9 +1,12 @@
 import type { ProductType } from "../types/product";
 import Price from "./Price";
 import { useTheme } from "../context/ThemeContext";
+import { Link } from "react-router-dom";
+import { useCart } from "../store/cart-context";
 
 const ProductCard = ({ product }: { product: ProductType }) => {
   const { isDarkMode } = useTheme();
+  const { addToCart } = useCart();
 
   return (
     <div
@@ -13,7 +16,9 @@ const ProductCard = ({ product }: { product: ProductType }) => {
           : "bg-card-light border-[rgba(217,70,239,0.1)]"
       }`}
     >
-      <div
+      <Link
+        to={`/products/${product.productId}`}
+        state={{ product }}
         className={`h-72 flex items-center justify-center relative overflow-hidden transition-colors duration-300 ${
           isDarkMode
             ? "bg-linear-to-br from-card-bg to-[#2a1f4a]"
@@ -33,7 +38,7 @@ const ProductCard = ({ product }: { product: ProductType }) => {
           alt={product.name}
           className="transition-transform duration-500 group-hover:scale-110"
         />
-      </div>
+      </Link>
       <div className="p-6">
         <h2 className="text-xl font-bold text-transparent bg-clip-text bg-linear-to-r from-primary-neon to-secondary-neon mb-2">
           {product.name}
@@ -45,10 +50,18 @@ const ProductCard = ({ product }: { product: ProductType }) => {
         >
           {product.description}
         </p>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center gap-3">
           <div className="bg-linear-to-r from-primary-neon to-accent-bright text-white font-bold py-2.5 px-6 rounded-full text-sm uppercase tracking-wider drop-shadow-[0_0_15px_rgba(217,70,239,0.4)]">
             <Price currency={"₨"} price={product.price} />
           </div>
+          <button
+            className={
+              "text-sm font-semibold uppercase tracking-wide py-2 px-3 rounded-full transition-all duration-300 bg-linear-to-r from-secondary-neon to-cyan-400 text-white hover:shadow-[0_0_25px_rgba(6,182,212,0.5)] hover:scale-105"
+            }
+            onClick={() => addToCart(product, 1)}
+          >
+            Add to Cart
+          </button>
         </div>
       </div>
     </div>

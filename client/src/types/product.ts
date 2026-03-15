@@ -1,5 +1,5 @@
 export type ProductType = {
-  id: string;
+  productId: string;
   name: string;
   price: string;
   imageUrl: string;
@@ -14,4 +14,11 @@ export type ProductType = {
   discount?: number;
   rating?: string;
   createdAt?: string;
+};
+
+export type ContactRequestType = {
+  name: string;
+  email: string;
+  mobileNumber: string;
+  message: string;
 };

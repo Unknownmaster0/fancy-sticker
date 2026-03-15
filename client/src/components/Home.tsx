@@ -1,47 +1,15 @@
-import { useEffect, useState } from "react";
 import PageHeading from "./PageHeading";
 import ProductListings from "./ProductListings";
 import { useTheme } from "../context/ThemeContext";
 import type { ProductType } from "../types/product";
 import apiClient from "../api/apiClient";
+import { isAxiosError } from "axios";
+import { useLoaderData } from "react-router-dom";
 
 const Home = () => {
   const { isDarkMode } = useTheme();
-  const [products, setProducts] = useState<ProductType[] | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const response = await apiClient.get<any>("/products");
-      setProducts(response.data);
-    } catch (error) {
-      setError("Failed to fetch products");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <span className="text-xl font-semibold">Loading products...</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <span className="text-xl text-red-500">Error: {error}</span>
-      </div>
-    );
-  }
+  const products = useLoaderData<ProductType[] | null>();
 
   return (
     <div
@@ -65,3 +33,29 @@ const Home = () => {
 };
 
 export default Home;
+
+export const ProductFetchLoading = async () => {
+  // todo: When backend is giving error while fetching products, then errorPage is shown without footer and header. Fix it.
+  try {
+    const response = await apiClient.get<any>("/products");
+    return response.data;
+  } catch (error) {
+    let title: string = "Failed to fetch products";
+    let message: string =
+      "An unexpected error occurred while fetching products.";
+    let status: number | undefined = 500;
+    if (isAxiosError(error)) {
+      title = error.name;
+      message = error.message;
+      status = error.response?.status;
+    } else if (error instanceof Error) {
+      title = error.name;
+      message = error.message;
+    }
+
+    throw new Response(JSON.stringify({ message }), {
+      status,
+      statusText: title,
+    });
+  }
+};
