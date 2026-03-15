@@ -25,6 +25,10 @@ const Register = () => {
     if (actionData?.success) {
       toast.success("Registration completed successfully. Try login..");
       navigate("/login");
+    } else {
+      if (actionData?.errors) {
+        toast.error("Please fix the errors in the form.");
+      }
     }
   }, [actionData]);
 

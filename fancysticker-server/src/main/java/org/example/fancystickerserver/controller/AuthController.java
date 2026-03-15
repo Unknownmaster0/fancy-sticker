@@ -7,12 +7,17 @@ import org.example.fancystickerserver.dto.LoginRequestDto;
 import org.example.fancystickerserver.dto.LoginResponseDto;
 import org.example.fancystickerserver.dto.RegisterRequestDto;
 import org.example.fancystickerserver.dto.UserDto;
+import org.example.fancystickerserver.entity.Customer;
+import org.example.fancystickerserver.repository.CustomerRepository;
 import org.example.fancystickerserver.utils.JwtUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.password.CompromisedPasswordChecker;
+import org.springframework.security.authentication.password.CompromisedPasswordDecision;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,6 +30,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -33,9 +41,10 @@ import java.util.Arrays;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final InMemoryUserDetailsManager inMemoryUserDetailsManager;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final CustomerRepository customerRepository;
+    private final CompromisedPasswordChecker compromisedPasswordChecker;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
@@ -46,8 +55,8 @@ public class AuthController {
             );
 
             UserDto user = new UserDto();
-            var loggedInUser = (User) authentication.getPrincipal();
-            user.setName(loggedInUser.getUsername());
+            var loggedInUser = (Customer) authentication.getPrincipal();
+            BeanUtils.copyProperties(loggedInUser, user);
             String jwtToken = jwtUtil.generateJwtToken(authentication);
             return ResponseEntity.ok().body(
                     new LoginResponseDto(HttpStatus.OK.getReasonPhrase(),
@@ -65,10 +74,40 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
-            inMemoryUserDetailsManager.createUser(new User(registerRequestDto.getEmail(),
-                    passwordEncoder.encode(registerRequestDto.getPassword()),
-                    Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"))));
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
+
+        CompromisedPasswordDecision decision =
+                compromisedPasswordChecker.check(registerRequestDto.getPassword());
+
+        if(decision.isCompromised()) {
+            return ResponseEntity.badRequest().body(Map.of("password", "Choose a strong password."));
+        }
+
+        Optional<Customer> existingCustomer =
+                customerRepository.findByEmailOrMobileNumber(registerRequestDto.getEmail(),
+                        registerRequestDto.getMobileNumber());
+
+        // either email or mobile number is already in use
+        if(existingCustomer.isPresent()) {
+            HashMap<String, String> errors = new HashMap<>();
+            Customer customer = existingCustomer.get();
+
+            if(customer.getEmail().equalsIgnoreCase(registerRequestDto.getEmail())) {
+                errors.put("email", "Email is already in use");
+            }
+
+            if(customer.getMobileNumber().equalsIgnoreCase(registerRequestDto.getMobileNumber())) {
+                errors.put("mobileNumber", "Mobile number is already in use");
+            }
+
+            return ResponseEntity.badRequest().body(errors);
+        }
+
+        // happy case scenario
+        Customer customer = new Customer();
+        BeanUtils.copyProperties(registerRequestDto, customer);
+        customer.setPasswordHash(passwordEncoder.encode(registerRequestDto.getPassword()));
+        customerRepository.save(customer);
 
             return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }

@@ -21,7 +21,7 @@ import { ToastContainer, Bounce } from "react-toastify";
 import { AuthProvider } from "./store/auth-context.tsx";
 import Register, { registerAction } from "./components/Register.tsx";
 import Orders from "./components/Orders.tsx";
-import Profile from "./components/Profile.tsx";
+import Profile, { profileAction, profileLoader } from "./components/Profile.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
 const routeDefinition = createRoutesFromElements(
@@ -35,7 +35,8 @@ const routeDefinition = createRoutesFromElements(
     <Route path="/cart" element={<Cart />} />
     <Route element={<ProtectedRoute />}>
       <Route path="/orders" element={<Orders />} />
-      <Route path="/profile" element={<Profile />} />
+      {/* shouldRevalidate method -- checks if the action result was not successful, then only run the loader function again else not. */}
+      <Route path="/profile" element={<Profile />} loader={profileLoader} action={profileAction} shouldRevalidate={({ actionResult }) => !actionResult.success} />
     </Route>
     <Route path="/products/:id" element={<ProductDetail />} />
   </Route>,

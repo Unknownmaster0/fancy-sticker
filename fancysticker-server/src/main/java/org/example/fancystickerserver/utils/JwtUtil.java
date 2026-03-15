@@ -3,6 +3,7 @@ package org.example.fancystickerserver.utils;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.example.fancystickerserver.constants.ApplicationConstants;
+import org.example.fancystickerserver.entity.Customer;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
@@ -21,11 +22,13 @@ public class JwtUtil {
         String secret = env.getProperty(ApplicationConstants.JWT_SECRET_KEY,
                 ApplicationConstants.JWT_SECRET_DEFAULT_VALUE);
         SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        User fetchedUser = (User) authentication.getPrincipal();
+        Customer fetchedCustomer = (Customer) authentication.getPrincipal();
 
         // generate token and return
         return Jwts.builder().issuer("Fancy Sticker").subject("JWT Token")
-                .claim("username", fetchedUser.getUsername())
+                .claim("username", fetchedCustomer.getName())
+                .claim("email", fetchedCustomer.getEmail())
+                .claim("mobileNumber", fetchedCustomer.getMobileNumber())
                 .issuedAt(new java.util.Date())
                 .expiration(new java.util.Date((new java.util.Date().getTime() + 60 * 60 * 1000)))
                 .signWith(secretKey)

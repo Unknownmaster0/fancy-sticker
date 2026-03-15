@@ -9,4 +9,5 @@ public class ApplicationConstants {
 
     public static final String JWT_SECRET_KEY = "jwtSecretKey";
     public static final String JWT_SECRET_DEFAULT_VALUE = "fancyStickerSecretKeyForJWT!@#$%";
+    public static final String JWT_HEADER = "Authorization";
 }
