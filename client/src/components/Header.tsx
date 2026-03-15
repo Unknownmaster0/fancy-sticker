@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 const Header = () => {
   const { isDarkMode, toggleTheme } = useTheme();
   const { totalQuantity } = useCart();
-  const { isAuthenticated, logOut } = useAuth();
+  const { isAuthenticated, user, logOut } = useAuth();
   const userMenuRef = useRef<HTMLDivElement>(null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
@@ -131,7 +131,7 @@ const Header = () => {
                     onClick={toggleUserMenu}
                     className="relative text-primary flex items-center gap-2"
                   >
-                    <span className={navLinkStyleClass}>Hello John Doe</span>
+                    <span className={navLinkStyleClass}>{user && `Hello ${user?.name.length > 5 ? `${user?.name.slice(0, 5)}...` : user?.name}`}</span>
                     <FontAwesomeIcon
                       icon={faAngleDown}
                       className="text-primary-neon dark:text-light w-6 h-6"

@@ -1,6 +1,6 @@
 export default interface User {
-  email: string | null;
-  mobileNumber: string | null;
+  email: string;
+  mobileNumber: string;
   name: string;
   userId: string | null;
 }

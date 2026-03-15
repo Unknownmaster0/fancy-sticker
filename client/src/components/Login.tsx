@@ -21,11 +21,13 @@ const Login = () => {
   const redirectPath = sessionStorage.getItem("redirectPath") || "/home";
 
   useEffect(() => {
-    // console.log(actionData)
     if (actionData && actionData.success) {
-      console.log("Login successful:", actionData);
       logInSuccess(actionData.jwtToken, actionData.user);
-      navigate(redirectPath);
+      sessionStorage.removeItem("redirectPath");
+      /** due to asynchronous nature, we need to wait for the auth context to update before navigating to the redirect path, else it will navigate to the protected route and then immediately redirect back to login page because the auth state has not updated yet. So we can use a setTimeout to delay the navigation until the auth state has updated. */
+      setTimeout(() => {
+        navigate(redirectPath);
+      }, 100);
     } else if (actionData?.errors) {
       toast.error(
         actionData.errors.message || "Login failed. Please try again.",

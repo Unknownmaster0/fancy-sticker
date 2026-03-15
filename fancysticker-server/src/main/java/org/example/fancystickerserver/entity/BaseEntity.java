@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -28,6 +29,7 @@ public class BaseEntity {
     private Instant createdAt;
 
     @Column(name = "created_by", nullable = false, length = 20, updatable = false)
+    @CreatedBy
     private String createdBy;
 
     @Column(name = "updated_at", insertable = false)
