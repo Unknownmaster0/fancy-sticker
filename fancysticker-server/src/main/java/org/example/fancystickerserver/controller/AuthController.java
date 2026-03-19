@@ -8,6 +8,7 @@ import org.example.fancystickerserver.dto.LoginResponseDto;
 import org.example.fancystickerserver.dto.RegisterRequestDto;
 import org.example.fancystickerserver.dto.UserDto;
 import org.example.fancystickerserver.entity.Customer;
+import org.example.fancystickerserver.entity.Role;
 import org.example.fancystickerserver.repository.CustomerRepository;
 import org.example.fancystickerserver.utils.JwtUtil;
 import org.springframework.beans.BeanUtils;
@@ -20,6 +21,7 @@ import org.springframework.security.authentication.password.CompromisedPasswordC
 import org.springframework.security.authentication.password.CompromisedPasswordDecision;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,10 +31,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -53,10 +53,10 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(loginRequestDto.username(),
                             loginRequestDto.password())
             );
-
             UserDto user = new UserDto();
             var loggedInUser = (Customer) authentication.getPrincipal();
             BeanUtils.copyProperties(loggedInUser, user);
+            user.setRoles(authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect((Collectors.joining(","))));
             String jwtToken = jwtUtil.generateJwtToken(authentication);
             return ResponseEntity.ok().body(
                     new LoginResponseDto(HttpStatus.OK.getReasonPhrase(),
@@ -107,6 +107,9 @@ public class AuthController {
         Customer customer = new Customer();
         BeanUtils.copyProperties(registerRequestDto, customer);
         customer.setPasswordHash(passwordEncoder.encode(registerRequestDto.getPassword()));
+        Role role = new Role();
+        role.setName("ROLE_USER");
+        customer.setRoles(Set.of(role));
         customerRepository.save(customer);
 
             return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");

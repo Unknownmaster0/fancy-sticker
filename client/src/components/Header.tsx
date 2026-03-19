@@ -18,7 +18,7 @@ const Header = () => {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
-  const isAdmin = true; // Replace with actual admin check
+  const isAdmin = user?.roles.includes("ROLE_ADMIN"); // Replace with actual admin check
   const navigate = useNavigate();
   const location = useLocation();
 

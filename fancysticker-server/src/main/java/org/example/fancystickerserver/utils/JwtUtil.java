@@ -6,12 +6,14 @@ import org.example.fancystickerserver.constants.ApplicationConstants;
 import org.example.fancystickerserver.entity.Customer;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.GrantedAuthority;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import io.jsonwebtoken.security.Keys;
+import java.util.stream.Collectors;
+
 
 @Component
 @RequiredArgsConstructor
@@ -29,6 +31,8 @@ public class JwtUtil {
                 .claim("username", fetchedCustomer.getName())
                 .claim("email", fetchedCustomer.getEmail())
                 .claim("mobileNumber", fetchedCustomer.getMobileNumber())
+                .claim("roles",
+                        authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(",")))
                 .issuedAt(new java.util.Date())
                 .expiration(new java.util.Date((new java.util.Date().getTime() + 60 * 60 * 1000)))
                 .signWith(secretKey)
