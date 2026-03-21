@@ -3,4 +3,5 @@ export default interface User {
   mobileNumber: string;
   name: string;
   userId: string | null;
+  roles: string;
 }

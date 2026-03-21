@@ -22,3 +22,5 @@ coverage/
 *.exe
 fancystickerserver/data/*.mv.db
 fancystickerserver/data/*
+.claude
+claude.sh

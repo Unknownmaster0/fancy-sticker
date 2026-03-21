@@ -14,6 +14,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
@@ -44,8 +45,9 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
                 if (secretKey != null) {
                     Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
                     String username = String.valueOf(claims.get("email"));
+                    String roles = String.valueOf(claims.get("roles"));
                     Authentication authentication = new UsernamePasswordAuthenticationToken(username, null,
-                            Collections.emptyList());
+                            AuthorityUtils.commaSeparatedStringToAuthorityList(roles)); // passing roles as authorities
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (Exception exception) {
