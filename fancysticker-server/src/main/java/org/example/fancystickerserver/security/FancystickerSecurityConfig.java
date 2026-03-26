@@ -39,9 +39,10 @@ public class FancystickerSecurityConfig {
 
         return httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
-                .authorizeHttpRequests((request) -> {
+                .authorizeHttpRequests(request -> {
                     publicPathsConfig.forEach(path -> request.requestMatchers(path).permitAll());
                     request.requestMatchers("/api/v1/admin/**").hasRole("ADMIN");
                     request.anyRequest().hasAnyRole("USER", "ADMIN");
