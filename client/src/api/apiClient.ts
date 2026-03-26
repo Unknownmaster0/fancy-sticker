@@ -33,8 +33,8 @@ apiClient.interceptors.request.use(
         if (!csrfToken) {
           throw new Error("Failed to retrieve CSRF token from cookies");
         }
-        config.headers["X-XSRF-TOKEN"] = csrfToken;
       }
+      config.headers["X-XSRF-TOKEN"] = csrfToken;
     }
 
     return config;
