@@ -4,11 +4,21 @@ import { Link } from "react-router-dom";
 import { useCart } from "../store/cart-context";
 import { useMemo } from "react";
 import CartTable from "./CartTable";
+import { useAuth } from "../store/auth-context";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const { cartItems } = useCart();
-
+  const { isAuthenticated, user } = useAuth();
   const isCartEmtpy = useMemo(() => cartItems.length === 0, [cartItems]);
+  const navigate = useNavigate();
+
+  const isAddressIncomplete = useMemo(() => {
+    if (!isAuthenticated || !user) return false; // If not authenticated, we don't consider the address incomplete here
+    if (!user.addressDto) return true; // If addressDto is missing, it's incomplete
+    const { street, city, state, postalCode, country } = user.addressDto;
+    return !street || !city || !state || !postalCode || !country; // If any of the fields are missing, it's incomplete
+  }, [user, isAuthenticated]);
 
   return (
     <div className="py-12 font-primary min-h-[78vh]">
@@ -33,23 +43,38 @@ const Cart = () => {
           </div>
         ) : (
           <>
+            {isAddressIncomplete && (
+              <p className="text-red-500 text-lg mt-2 text-center">
+                Please update your address in your profile to proceed to
+                checkout.
+              </p>
+            )}
             <CartTable />
             <div className="flex justify-between mt-8 space-x-4">
               {/* Back to Products Button */}
               <Link
-                to="/home"
+                to={"/home"}
                 className={`py-3 px-6 font-semibold text-lg rounded-full flex justify-center items-center transition-all duration-300
                   bg-linear-to-r from-primary-neon/90 to-accent-bright/90 text-white hover:shadow-[0_0_25px_rgba(217,70,239,0.4)] hover:scale-105`}
               >
                 Back to Products
               </Link>
               {/* Proceed to Checkout Button */}
-              <button
+              <Link
+                to={isAddressIncomplete ? "#" : "/checkout"}
                 className={`py-3 px-6 font-semibold text-lg rounded-full flex justify-center items-center transition-all duration-300 
+                  ${isAddressIncomplete ? "cursor-not-allowed opacity-50" : ""}
                   bg-linear-to-r from-primary-neon/90 to-accent-bright/90 text-white hover:shadow-[0_0_25px_rgba(217,70,239,0.4)] hover:scale-105`}
+                onClick={(e) => {
+                  if (!isAddressIncomplete) {
+                    navigate("/checkout");
+                  } else {
+                    e.preventDefault(); // Prevent navigation if address is incomplete
+                  }
+                }}
               >
                 Proceed to Checkout
-              </button>
+              </Link>
             </div>
           </>
         )}

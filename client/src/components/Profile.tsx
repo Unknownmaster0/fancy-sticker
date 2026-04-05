@@ -1,4 +1,11 @@
-import { Form, useActionData, useLoaderData, useNavigate, useNavigation, type ActionFunction } from "react-router-dom";
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useNavigate,
+  useNavigation,
+  type ActionFunction,
+} from "react-router-dom";
 import PageTitle from "./PageTitle";
 import { useEffect, useState } from "react";
 import { useTheme } from "../context/ThemeContext";
@@ -8,13 +15,14 @@ import { useAuth } from "../store/auth-context";
 import { toast } from "react-toastify";
 
 const Profile = () => {
-  const initialProfileData : ProfileType = useLoaderData();
+  const initialProfileData: ProfileType = useLoaderData();
   const actionData = useActionData();
-  const [profileData, setProfileData] = useState<ProfileType>(initialProfileData);
+  const [profileData, setProfileData] =
+    useState<ProfileType>(initialProfileData);
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
   const navigate = useNavigate();
-  const {logOut} = useAuth();
+  const { logOut, logInSuccess } = useAuth();
   const { isDarkMode } = useTheme();
 
   useEffect(() => {
@@ -23,10 +31,20 @@ const Profile = () => {
         // If email is updated, then user must logged in with new credentials.
         sessionStorage.setItem("skipRedirectPath", "true");
         logOut();
-        toast.success("Profile updated successfully. Please login again with new credentials.");
+        toast.success(
+          "Profile updated successfully. Please login again with new credentials.",
+        );
         navigate("/login");
       } else {
         setProfileData(actionData.profileData);
+        // Update the user details in auth context as well since it is used across the app for showing user name and email in header and also for pre-filling the checkout form.
+        if (actionData.profileData) {
+          const updatedUser = {
+            ...profileData, // previous user details,
+            ...actionData.profileData, // updated details from the form
+          };
+          logInSuccess(localStorage.getItem("jwtToken")!, updatedUser);
+        }
         toast.success("Profile updated successfully.");
       }
     }
@@ -47,7 +65,7 @@ const Profile = () => {
   }`;
 
   return (
-  <div className="max-w-6xl min-h-213 mx-auto px-6 py-8 font-primary bg-normalbg dark:bg-darkbg">
+    <div className="max-w-6xl min-h-213 mx-auto px-6 py-8 font-primary bg-normalbg dark:bg-darkbg">
       <PageTitle title="My Profile" />
 
       <Form method="PUT" className="space-y-6 max-w-3xl mx-auto">
@@ -140,11 +158,14 @@ const Profile = () => {
             name="street"
             type="text"
             placeholder="Street details"
-            value={profileData?.street || ""}
+            value={profileData?.addressDto?.street || ""}
             onChange={(e) =>
               setProfileData((prev) => ({
                 ...prev,
-                street: e.target.value,
+                addressDto: {
+                  ...prev.addressDto,
+                  street: e.target.value,
+                },
               }))
             }
             className={textFieldStyle}
@@ -169,11 +190,14 @@ const Profile = () => {
               name="city"
               type="text"
               placeholder="Your City"
-              value={profileData?.city || ""}
+              value={profileData?.addressDto?.city || ""}
               onChange={(e) =>
                 setProfileData((prev) => ({
                   ...prev,
-                  city: e.target.value,
+                  addressDto: {
+                    ...prev.addressDto,
+                    city: e.target.value,
+                  },
                 }))
               }
               className={textFieldStyle}
@@ -200,11 +224,14 @@ const Profile = () => {
               minLength={2}
               maxLength={30}
               placeholder="Your State"
-              value={profileData?.state || ""}
+              value={profileData?.addressDto?.state || ""}
               onChange={(e) =>
                 setProfileData((prev) => ({
                   ...prev,
-                  state: e.target.value,
+                  addressDto: {
+                    ...prev.addressDto,
+                    state: e.target.value,
+                  },
                 }))
               }
               className={textFieldStyle}
@@ -227,11 +254,14 @@ const Profile = () => {
               name="postalCode"
               type="text"
               placeholder="Your Postal Code"
-              value={profileData?.postalCode || ""}
+              value={profileData?.addressDto?.postalCode || ""}
               onChange={(e) =>
                 setProfileData((prev) => ({
                   ...prev,
-                  postalCode: e.target.value,
+                  addressDto: {
+                    ...prev.addressDto,
+                    postalCode: e.target.value,
+                  },
                 }))
               }
               className={textFieldStyle}
@@ -248,21 +278,24 @@ const Profile = () => {
 
           <div>
             <label htmlFor="country" className={labelStyle}>
-              Country
+              Country Code
             </label>
             <input
               id="country"
               name="country"
               type="text"
               required
-              minLength={3}
-              maxLength={30}
-              placeholder="Your Country"
-              value={profileData?.country || ""}
+              minLength={2}
+              maxLength={2}
+              placeholder="Your Country Code (e.g. IN)"
+              value={profileData?.addressDto?.country || ""}
               onChange={(e) =>
                 setProfileData((prev) => ({
                   ...prev,
-                  country: e.target.value,
+                  addressDto: {
+                    ...prev.addressDto,
+                    country: e.target.value,
+                  },
                 }))
               }
               className={textFieldStyle}
@@ -291,24 +324,24 @@ const Profile = () => {
       </Form>
     </div>
   );
-}
+};
 
 export async function profileLoader() {
   try {
     const response = await apiClient.get("/profile");
-    console.log(response)
+    console.log(response);
     return response.data;
-  } catch (error : any) {
+  } catch (error: any) {
     throw new Response(
       error.response?.data?.errorMessage ||
         error.message ||
         "Failed to fetch profile details. Please try again.",
-      { status: error.status || 500 }
+      { status: error.status || 500 },
     );
   }
 }
 
-export const profileAction : ActionFunction = async ({ request }) => {
+export const profileAction: ActionFunction = async ({ request }) => {
   const data = await request.formData();
 
   const profileData = {
@@ -324,7 +357,7 @@ export const profileAction : ActionFunction = async ({ request }) => {
   try {
     const response = await apiClient.put("/profile", profileData);
     return { success: true, profileData: response.data };
-  } catch (error : any) {
+  } catch (error: any) {
     if (error.response?.status === 400) {
       return { success: false, errors: error.response?.data };
     }
@@ -332,9 +365,9 @@ export const profileAction : ActionFunction = async ({ request }) => {
       error.response?.data?.errorMessage ||
         error.message ||
         "Failed to save profile details. Please try again.",
-      { status: error.status || 500 }
+      { status: error.status || 500 },
     );
   }
-}
+};
 
-export default Profile
+export default Profile;

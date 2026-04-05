@@ -3,10 +3,7 @@ package org.example.fancystickerserver.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.fancystickerserver.dto.LoginRequestDto;
-import org.example.fancystickerserver.dto.LoginResponseDto;
-import org.example.fancystickerserver.dto.RegisterRequestDto;
-import org.example.fancystickerserver.dto.UserDto;
+import org.example.fancystickerserver.dto.*;
 import org.example.fancystickerserver.entity.Customer;
 import org.example.fancystickerserver.entity.Role;
 import org.example.fancystickerserver.repository.CustomerRepository;
@@ -57,6 +54,9 @@ public class AuthController {
             var loggedInUser = (Customer) authentication.getPrincipal();
             BeanUtils.copyProperties(loggedInUser, user);
             user.setRoles(authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect((Collectors.joining(","))));
+            AddressDto address = new AddressDto();
+            BeanUtils.copyProperties(loggedInUser.getAddress(), address);
+            user.setAddressDto(address);
             String jwtToken = jwtUtil.generateJwtToken(authentication);
             return ResponseEntity.ok().body(
                     new LoginResponseDto(HttpStatus.OK.getReasonPhrase(),

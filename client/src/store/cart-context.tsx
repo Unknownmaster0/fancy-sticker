@@ -1,9 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useReducer,
-} from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 import type { ProductType } from "../types/product";
 
 type CartItemType = ProductType & { quantity: number };
@@ -14,6 +9,7 @@ interface CartContextType {
   removeFromCart: (itemId: string) => void;
   clearCart: () => void;
   totalQuantity: number;
+  totalPrice: number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -88,34 +84,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [cartItems]);
 
-  /**
-  const addToCart = (product: ProductType, quantity: number) => {
-    setCartItems((prevItems) => {
-      // check if product already exists in cart
-      const existingItem = prevItems.find(
-        (item) => item.productId === product.productId,
-      );
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.productId === product.productId
-            ? { ...item, quantity: item.quantity + quantity }
-            : item,
-        );
-      } else {
-        // if not then directly insert into the cart
-        return [...prevItems, { ...product, quantity }];
-      }
-    });
-  };
-
-  const removeFromCart = (productId: string) =>
-    setCartItems((prevItems) =>
-      prevItems.filter((item) => item.productId !== productId),
-    );
-
-  const clearCart = () => setCartItems([]);
-*/
-
   const addToCart = (product: ProductType, quantity: number) => {
     dispatch({ type: ADD_TO_CART, payload: { ...product, quantity } });
   };
@@ -133,12 +101,18 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     0,
   );
 
+  const totalPrice = cartItems.reduce(
+    (total, product) => total + product.price * product.quantity,
+    0,
+  );
+
   const initialCartState: CartContextType = {
     cartItems,
     addToCart,
     removeFromCart,
     clearCart,
     totalQuantity,
+    totalPrice,
   };
 
   return (

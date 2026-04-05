@@ -1,6 +1,7 @@
 package org.example.fancystickerserver.services.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.example.fancystickerserver.dto.AddressDto;
 import org.example.fancystickerserver.dto.ProfileRequestDto;
 import org.example.fancystickerserver.dto.ProfileResponseDto;
 import org.example.fancystickerserver.entity.Address;
@@ -39,7 +40,6 @@ public class ProfileServiceImplementation implements IProfileService {
         address.setCity(profileRequestDto.getCity());
         address.setPostalCode(profileRequestDto.getPostalCode());
         address.setCountry(profileRequestDto.getCountry());
-        System.out.println("address = " + address.toString());
         customer.setAddress(address);
         customer = customerRepository.save(customer);
         ProfileResponseDto responseDto = mapCustomerToProfileResponseDto(customer);
@@ -47,7 +47,7 @@ public class ProfileServiceImplementation implements IProfileService {
         return responseDto;
     }
 
-    private Customer getAuthenticatedCustomer() {
+    public Customer getAuthenticatedCustomer() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         return customerRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
@@ -56,18 +56,13 @@ public class ProfileServiceImplementation implements IProfileService {
     private ProfileResponseDto mapCustomerToProfileResponseDto(Customer customer) {
         ProfileResponseDto profileResponseDto = new ProfileResponseDto();
         profileResponseDto.setCustomerId(customer.getId());
-        profileResponseDto.setName(customer.getName());
-        profileResponseDto.setEmail(customer.getEmail());
-        profileResponseDto.setMobileNumber(customer.getMobileNumber());
+        BeanUtils.copyProperties(customer, profileResponseDto);
 
         // Map address fields if address exists
         if (customer.getAddress() != null) {
-            Address address = customer.getAddress();
-            profileResponseDto.setStreet(address.getStreet());
-            profileResponseDto.setCity(address.getCity());
-            profileResponseDto.setState(address.getState());
-            profileResponseDto.setPostalCode(address.getPostalCode());
-            profileResponseDto.setCountry(address.getCountry());
+            AddressDto addressDto = new AddressDto();
+            BeanUtils.copyProperties(customer.getAddress(), addressDto);
+            profileResponseDto.setAddressDto(addressDto);
         }
 
         return profileResponseDto;
