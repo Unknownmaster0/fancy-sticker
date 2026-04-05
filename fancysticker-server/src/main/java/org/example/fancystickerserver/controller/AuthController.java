@@ -57,12 +57,13 @@ public class AuthController {
             AddressDto address = new AddressDto();
             BeanUtils.copyProperties(loggedInUser.getAddress(), address);
             user.setAddressDto(address);
+            user.setUserId(loggedInUser.getId());
             String jwtToken = jwtUtil.generateJwtToken(authentication);
-            return ResponseEntity.ok().body(
-                    new LoginResponseDto(HttpStatus.OK.getReasonPhrase(),
-                            user,
-                            jwtToken)
-            );
+            LoginResponseDto responseDto = new LoginResponseDto();
+            responseDto.setUser(user);
+            responseDto.setJwtToken(jwtToken);
+            responseDto.setMessage(HttpStatus.OK.getReasonPhrase());
+            return ResponseEntity.ok().body(responseDto);
         } catch (BadCredentialsException badCredentialsException) {
             return BuildLoginError(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         } catch (AuthenticationException authenticationException) {
@@ -116,8 +117,8 @@ public class AuthController {
     }
 
     public ResponseEntity<LoginResponseDto> BuildLoginError(HttpStatus status, String message) {
-        return ResponseEntity.status(status).body(new LoginResponseDto(
-                message, null, null
-        ));
+        LoginResponseDto responseDto = new LoginResponseDto();
+        responseDto.setMessage(message);
+        return ResponseEntity.status(status).body(responseDto);
     }
 }

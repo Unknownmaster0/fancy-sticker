@@ -1,4 +1,11 @@
 package org.example.fancystickerserver.dto;
 
-public record LoginResponseDto(String message, UserDto user, String jwtToken) {
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
+public class LoginResponseDto {
+    private String message;
+    private UserDto user;
+    private String jwtToken;
 }

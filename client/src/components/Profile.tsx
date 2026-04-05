@@ -15,10 +15,11 @@ import { useAuth } from "../store/auth-context";
 import { toast } from "react-toastify";
 
 const Profile = () => {
-  const initialProfileData: ProfileType = useLoaderData();
+  const initialProfileData: { user: ProfileType } = useLoaderData();
   const actionData = useActionData();
-  const [profileData, setProfileData] =
-    useState<ProfileType>(initialProfileData);
+  const [profileData, setProfileData] = useState<ProfileType>(
+    initialProfileData.user,
+  );
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const Profile = () => {
         );
         navigate("/login");
       } else {
-        setProfileData(actionData.profileData);
+        setProfileData(actionData.profileData.user);
         // Update the user details in auth context as well since it is used across the app for showing user name and email in header and also for pre-filling the checkout form.
         if (actionData.profileData) {
           const updatedUser = {
@@ -82,7 +83,10 @@ const Profile = () => {
             className={textFieldStyle}
             value={profileData?.name}
             onChange={(e) =>
-              setProfileData((prev) => ({ ...prev, name: e.target.value }))
+              setProfileData((prev) => ({
+                ...prev,
+                name: e.target.value,
+              }))
             }
             required
             minLength={5}
@@ -107,7 +111,10 @@ const Profile = () => {
               placeholder="Your Email"
               value={profileData?.email}
               onChange={(e) =>
-                setProfileData((prev) => ({ ...prev, email: e.target.value }))
+                setProfileData((prev) => ({
+                  ...prev,
+                  email: e.target.value,
+                }))
               }
               className={textFieldStyle}
               required

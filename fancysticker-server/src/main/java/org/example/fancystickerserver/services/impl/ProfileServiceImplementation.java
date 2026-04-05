@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.example.fancystickerserver.dto.AddressDto;
 import org.example.fancystickerserver.dto.ProfileRequestDto;
 import org.example.fancystickerserver.dto.ProfileResponseDto;
+import org.example.fancystickerserver.dto.UserDto;
 import org.example.fancystickerserver.entity.Address;
 import org.example.fancystickerserver.entity.Customer;
+import org.example.fancystickerserver.entity.Role;
 import org.example.fancystickerserver.repository.CustomerRepository;
 import org.example.fancystickerserver.services.IProfileService;
 import org.springframework.beans.BeanUtils;
@@ -28,7 +30,7 @@ public class ProfileServiceImplementation implements IProfileService {
     @Override
     public ProfileResponseDto updateProfile(ProfileRequestDto profileRequestDto) {
         Customer customer = getAuthenticatedCustomer();
-        Boolean isEmailUpdated = !customer.getEmail().equals(profileRequestDto.getEmail().trim());
+        boolean isEmailUpdated = !customer.getEmail().equals(profileRequestDto.getEmail().trim());
         BeanUtils.copyProperties(profileRequestDto, customer);
         Address address = customer.getAddress();
         if (address == null) {
@@ -55,16 +57,25 @@ public class ProfileServiceImplementation implements IProfileService {
 
     private ProfileResponseDto mapCustomerToProfileResponseDto(Customer customer) {
         ProfileResponseDto profileResponseDto = new ProfileResponseDto();
-        profileResponseDto.setCustomerId(customer.getId());
-        BeanUtils.copyProperties(customer, profileResponseDto);
+        UserDto user = new UserDto();
+        BeanUtils.copyProperties(customer, user);
+        user.setUserId(customer.getId());
+
+        // Map roles as comma-separated string (consistent with AuthController pattern)
+        String roles = customer.getRoles().stream()
+                .map(Role::getName)
+                .reduce((role1, role2) -> role1 + "," + role2)
+                .orElse("");
+        user.setRoles(roles);
 
         // Map address fields if address exists
         if (customer.getAddress() != null) {
             AddressDto addressDto = new AddressDto();
             BeanUtils.copyProperties(customer.getAddress(), addressDto);
-            profileResponseDto.setAddressDto(addressDto);
+            user.setAddressDto(addressDto);
         }
 
+profileResponseDto.setUser(user);
         return profileResponseDto;
     }
 }

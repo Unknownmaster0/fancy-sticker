@@ -58,6 +58,8 @@ const Header = () => {
 
   const dropdownLinkClass = `block w-full text-left px-4 py-2 text-lg font-primary font-semibold text-gray-800 ${isDarkMode ? "text-light hover:bg-purple-100 hover:bg-gray-600" : "hover:bg-purple-100 hover:bg-gray-600"}`;
 
+  console.log("User from header: ", user);
+
   return (
     <header
       className={`sticky top-0 z-100 border-b-2 border-primary-neon backdrop-blur-xl shadow-[0_0_30px_rgba(217,70,239,0.3),inset_0_1px_0_rgba(217,70,239,0.1)] ${
@@ -131,7 +133,10 @@ const Header = () => {
                     onClick={toggleUserMenu}
                     className="relative text-primary flex items-center gap-2"
                   >
-                    <span className={navLinkStyleClass}>{user && `Hello ${user?.name.length > 5 ? `${user?.name.slice(0, 5)}...` : user?.name}`}</span>
+                    <span className={navLinkStyleClass}>
+                      {user &&
+                        `Hello ${user?.name.length > 5 ? `${user?.name.slice(0, 5)}...` : user?.name}`}
+                    </span>
                     <FontAwesomeIcon
                       icon={faAngleDown}
                       className="text-primary-neon dark:text-light w-6 h-6"
