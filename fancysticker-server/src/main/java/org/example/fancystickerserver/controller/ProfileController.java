@@ -23,9 +23,7 @@ public class ProfileController {
 
     @PutMapping
     public ResponseEntity<ProfileResponseDto> updateUserProfile(@Validated @RequestBody ProfileRequestDto profileRequestDto) {
-        System.out.println("profileRequestDto = " + profileRequestDto);
         ProfileResponseDto responseDto = iProfileService.updateProfile(profileRequestDto);
-        System.out.println("responseDto = " + responseDto);
         return ResponseEntity.ok().body(responseDto);
     }
 }

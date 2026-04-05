@@ -3,10 +3,7 @@ package org.example.fancystickerserver.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.fancystickerserver.dto.LoginRequestDto;
-import org.example.fancystickerserver.dto.LoginResponseDto;
-import org.example.fancystickerserver.dto.RegisterRequestDto;
-import org.example.fancystickerserver.dto.UserDto;
+import org.example.fancystickerserver.dto.*;
 import org.example.fancystickerserver.entity.Customer;
 import org.example.fancystickerserver.entity.Role;
 import org.example.fancystickerserver.repository.CustomerRepository;
@@ -57,12 +54,16 @@ public class AuthController {
             var loggedInUser = (Customer) authentication.getPrincipal();
             BeanUtils.copyProperties(loggedInUser, user);
             user.setRoles(authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect((Collectors.joining(","))));
+            AddressDto address = new AddressDto();
+            BeanUtils.copyProperties(loggedInUser.getAddress(), address);
+            user.setAddressDto(address);
+            user.setUserId(loggedInUser.getId());
             String jwtToken = jwtUtil.generateJwtToken(authentication);
-            return ResponseEntity.ok().body(
-                    new LoginResponseDto(HttpStatus.OK.getReasonPhrase(),
-                            user,
-                            jwtToken)
-            );
+            LoginResponseDto responseDto = new LoginResponseDto();
+            responseDto.setUser(user);
+            responseDto.setJwtToken(jwtToken);
+            responseDto.setMessage(HttpStatus.OK.getReasonPhrase());
+            return ResponseEntity.ok().body(responseDto);
         } catch (BadCredentialsException badCredentialsException) {
             return BuildLoginError(HttpStatus.UNAUTHORIZED, "Invalid username or password");
         } catch (AuthenticationException authenticationException) {
@@ -116,8 +117,8 @@ public class AuthController {
     }
 
     public ResponseEntity<LoginResponseDto> BuildLoginError(HttpStatus status, String message) {
-        return ResponseEntity.status(status).body(new LoginResponseDto(
-                message, null, null
-        ));
+        LoginResponseDto responseDto = new LoginResponseDto();
+        responseDto.setMessage(message);
+        return ResponseEntity.status(status).body(responseDto);
     }
 }

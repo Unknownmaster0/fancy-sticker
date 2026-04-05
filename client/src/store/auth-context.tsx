@@ -1,14 +1,14 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
-import type User from "../types/user";
+import type ProfileType from "../types/profile";
 
 interface AuthState {
   isAuthenticated: boolean;
-  user: User | null;
+  user: ProfileType | null;
   jwtToken: string | null;
 }
 
 interface AuthContextType extends AuthState {
-  logInSuccess: (jwtToken: string, user: User) => void;
+  logInSuccess: (jwtToken: string, user: ProfileType) => void;
   logOut: () => void;
 }
 
@@ -83,7 +83,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [authState]);
 
-  const logInSuccess = (jwtToken: string, user: User) => {
+  const logInSuccess = (jwtToken: string, user: ProfileType) => {
     dispatch({
       type: LOGIN_SUCCESS,
       payload: { jwtToken, user },
