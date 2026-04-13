@@ -56,9 +56,11 @@ const Header = () => {
     isDarkMode ? darkThemeClass : lightThemeClass
   }`;
 
-  const dropdownLinkClass = `block w-full text-left px-4 py-2 text-lg font-primary font-semibold text-gray-800 ${isDarkMode ? "text-light hover:bg-purple-100 hover:bg-gray-600" : "hover:bg-purple-100 hover:bg-gray-600"}`;
-
-  console.log("User from header: ", user);
+  const dropdownLinkClass = `block w-full text-left px-4 py-2 text-lg font-semibold transition-colors duration-200 ${
+    isDarkMode
+      ? "text-text-muted hover:bg-[rgba(217,70,239,0.15)] hover:text-text-main"
+      : "text-text-dark hover:bg-[rgba(217,70,239,0.08)]"
+  }`;
 
   return (
     <header

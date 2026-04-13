@@ -1,4 +1,6 @@
 package org.example.fancystickerserver.dto;
 
-public record ContactResponseDto() {
+import java.util.List;
+
+public record ContactResponseDto(List<ContactDetailsDto> contacts) {
 }

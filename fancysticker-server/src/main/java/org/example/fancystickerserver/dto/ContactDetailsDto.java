@@ -1,4 +1,7 @@
 package org.example.fancystickerserver.dto;
 
-public record ContactDetailsDto() {
+import java.time.Instant;
+
+public record ContactDetailsDto(Long id, String name, String email, String message, String mobileNumber,
+                                String status, Instant createdAt) {
 }

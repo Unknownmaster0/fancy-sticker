@@ -1,15 +1,39 @@
-import { useLoaderData, useNavigate } from "react-router-dom";
-import apiClient from "../api/apiClient";
-import type { Orders } from "../types/orders";
-import { useState } from "react";
-import { useTheme } from "../context/ThemeContext";
-import PageTitle from "./PageTitle";
+import { useEffect, useState, useRef } from "react";
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useNavigation,
+  type ActionFunction,
+} from "react-router-dom";
+import apiClient from "../../api/apiClient";
+import type { Orders } from "../../types/orders";
+import { useTheme } from "../../context/ThemeContext";
+import PageTitle from "../PageTitle";
+import { toast } from "react-toastify";
 
-const Orders = () => {
+const AdminOrders = () => {
   const orders: Orders[] = useLoaderData();
   const { isDarkMode } = useTheme();
-  const navigate = useNavigate();
+  const navigation = useNavigation();
+  const actionData = useActionData();
+  const isSubmitting = navigation.state === "submitting";
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
+  const previousActionDataRef = useRef<any>(null);
+
+  useEffect(() => {
+    // Only process if actionData has changed from what we last processed
+    if (actionData && actionData !== previousActionDataRef.current) {
+      previousActionDataRef.current = actionData;
+
+      if (actionData.success) {
+        toast.success(actionData.message);
+        setExpandedOrderId(null);
+      } else {
+        toast.error(actionData.error || "Failed to process order, retry...");
+      }
+    }
+  }, [actionData]);
 
   const toggleOrderExpand = (orderId: number) => {
     setExpandedOrderId(expandedOrderId === orderId ? null : orderId);
@@ -67,7 +91,7 @@ const Orders = () => {
             : "bg-bg-light text-text-dark"
         }`}
       >
-        <PageTitle title="My Orders" />
+        <PageTitle title="Pending Orders" />
         <div
           className={`max-w-6xl mx-auto px-4 py-16 text-center ${
             isDarkMode ? "bg-bg-dark" : "bg-bg-light"
@@ -78,14 +102,8 @@ const Orders = () => {
               isDarkMode ? "text-text-muted" : "text-text-light-muted"
             }`}
           >
-            No orders found. Start shopping now!
+            No pending orders at the moment.
           </p>
-          <button
-            onClick={() => navigate("/home")}
-            className="mt-6 px-8 py-3 rounded-lg font-semibold transition-all duration-300 bg-linear-to-r from-primary-neon to-secondary-neon hover:shadow-lg hover:shadow-primary-neon/50 text-white"
-          >
-            Continue Shopping
-          </button>
         </div>
       </div>
     );
@@ -97,7 +115,7 @@ const Orders = () => {
         isDarkMode ? "bg-bg-dark text-text-main" : "bg-bg-light text-text-dark"
       }`}
     >
-      <PageTitle title="My Orders" />
+      <PageTitle title="Pending Orders" />
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="space-y-6">
@@ -315,7 +333,7 @@ const Orders = () => {
                           : "border-primary-neon border-opacity-30"
                       }`}
                     >
-                      <div className="flex justify-end items-center gap-4">
+                      <div className="flex justify-between items-center gap-4">
                         <span className="text-lg font-semibold">
                           Order Total:
                         </span>
@@ -324,6 +342,48 @@ const Orders = () => {
                         >
                           ${order.totalPrice.toFixed(2)}
                         </span>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex gap-4 mt-6 justify-end">
+                        <Form method="PATCH" className="flex gap-4">
+                          <input type="hidden" name="action" value="cancel" />
+                          <input
+                            type="hidden"
+                            name="orderId"
+                            value={order.orderId}
+                          />
+                          <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${
+                              isSubmitting
+                                ? "opacity-50 cursor-not-allowed"
+                                : "hover:shadow-lg hover:shadow-red-500/50"
+                            } bg-red-500 text-white hover:bg-red-600 disabled:hover:bg-red-500`}
+                          >
+                            {isSubmitting ? "Processing..." : "Cancel Order"}
+                          </button>
+                        </Form>
+                        <Form method="PATCH" className="flex">
+                          <input type="hidden" name="action" value="confirm" />
+                          <input
+                            type="hidden"
+                            name="orderId"
+                            value={order.orderId}
+                          />
+                          <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 ${
+                              isSubmitting
+                                ? "opacity-50 cursor-not-allowed"
+                                : "hover:shadow-lg hover:shadow-accent-lime/50"
+                            } bg-accent-lime text-black hover:bg-opacity-90 disabled:hover:bg-accent-lime`}
+                          >
+                            {isSubmitting ? "Processing..." : "Confirm Order"}
+                          </button>
+                        </Form>
                       </div>
                     </div>
                   </div>
@@ -337,17 +397,51 @@ const Orders = () => {
   );
 };
 
-export async function OrdersLoader() {
+export async function AdminOrdersLoader() {
   try {
-    const response = (await apiClient("/orders")).data;
-    console.log("Orders:", response);
-    return response.orders;
+    const response = (await apiClient("/admin/orders")).data;
+    console.log("Pending Orders:", response);
+    return response.orders || [];
   } catch (error: any) {
     throw new Response(
-      error.response?.data?.message || "Failed to load orders",
+      error.response?.data?.message || "Failed to load pending orders",
       { status: error.status || 500 },
     );
   }
 }
 
-export default Orders;
+export const AdminOrdersAction: ActionFunction = async ({ request }) => {
+  if (request.method !== "PATCH") {
+    throw new Response("Method not allowed", { status: 405 });
+  }
+
+  const formData = await request.formData();
+  const action = formData.get("action");
+  const orderId = formData.get("orderId");
+
+  if (!action || !orderId) {
+    throw new Response("Missing action or orderId", { status: 400 });
+  }
+
+  try {
+    if (action === "confirm") {
+      await apiClient.patch(`/admin/orders/${orderId}/confirm`);
+      return { success: true, message: "Order confirmed successfully" };
+    } else if (action === "cancel") {
+      await apiClient.patch(`/admin/orders/${orderId}/cancel`);
+      return { success: true, message: "Order cancelled successfully" };
+    } else {
+      throw new Response("Invalid action", { status: 400 });
+    }
+  } catch (error: any) {
+    if (error.response?.status === 400) {
+      return { success: false, error: error.response?.data?.message };
+    }
+    throw new Response(
+      error.response?.data?.message || "Failed to process order action",
+      { status: error.response?.status || 500 },
+    );
+  }
+};
+
+export default AdminOrders;

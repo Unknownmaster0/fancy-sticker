@@ -55,7 +55,9 @@ public class AuthController {
             BeanUtils.copyProperties(loggedInUser, user);
             user.setRoles(authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect((Collectors.joining(","))));
             AddressDto address = new AddressDto();
-            BeanUtils.copyProperties(loggedInUser.getAddress(), address);
+            if (loggedInUser.getAddress() != null) {
+                BeanUtils.copyProperties(loggedInUser.getAddress(), address);
+            }
             user.setAddressDto(address);
             user.setUserId(loggedInUser.getId());
             String jwtToken = jwtUtil.generateJwtToken(authentication);

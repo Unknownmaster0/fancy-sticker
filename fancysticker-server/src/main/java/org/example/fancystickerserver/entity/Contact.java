@@ -29,6 +29,9 @@ public class Contact extends BaseEntity{
     @Column(name = "message", nullable = false, length = 500)
     private String message;
 
+    @Column(name = "status", nullable = false, length = 50)
+    private String status;
+
 //    @ColumnDefault("CURRENT_TIMESTAMP")
 //    @Column(name = "created_at", nullable = false)
 //    private Instant createdAt;

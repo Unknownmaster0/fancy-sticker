@@ -20,7 +20,7 @@ import { CartProvider } from "./store/cart-context.tsx";
 import { ToastContainer, Bounce } from "react-toastify";
 import { AuthProvider } from "./store/auth-context.tsx";
 import Register, { registerAction } from "./components/Register.tsx";
-import Orders from "./components/Orders.tsx";
+import Orders, { OrdersLoader } from "./components/Orders.tsx";
 import Profile, {
   profileAction,
   profileLoader,
@@ -30,6 +30,14 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./components/CheckoutForm.tsx";
 import OrderSuccess from "./components/OrderSuccess.tsx";
+import AdminMessages, {
+  AdminMessagesAction,
+  AdminMessagesLoader,
+} from "./components/admin/AdminMessages.tsx";
+import AdminOrders, {
+  AdminOrdersAction,
+  AdminOrdersLoader,
+} from "./components/admin/AdminOrders.tsx";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -43,7 +51,7 @@ const routeDefinition = createRoutesFromElements(
     <Route path="/register" element={<Register />} action={registerAction} />
     <Route path="/cart" element={<Cart />} />
     <Route element={<ProtectedRoute />}>
-      <Route path="/orders" element={<Orders />} />
+      <Route path="/orders" element={<Orders />} loader={OrdersLoader} />
       <Route path="/order-success" element={<OrderSuccess />} />
       {/* shouldRevalidate method -- checks if the action result was not successful, then only run the loader function again else not. */}
       <Route
@@ -54,6 +62,18 @@ const routeDefinition = createRoutesFromElements(
         shouldRevalidate={({ actionResult }) => !actionResult.success}
       />
       <Route path="/checkout" element={<CheckoutForm />} />
+      <Route
+        path="/admin/messages"
+        element={<AdminMessages />}
+        loader={AdminMessagesLoader}
+        action={AdminMessagesAction}
+      />
+      <Route
+        path="/admin/orders"
+        element={<AdminOrders />}
+        loader={AdminOrdersLoader}
+        action={AdminOrdersAction}
+      />
     </Route>
     <Route path="/products/:id" element={<ProductDetail />} />
   </Route>,
