@@ -27,6 +27,10 @@ public class JwtUtil {
         Customer fetchedCustomer = (Customer) authentication.getPrincipal();
 
         // generate token and return
+        // FOR TESTING: Token expires in 1 minute
+        // TO REVERT TO 24 HOURS: Change the line below to: long expirationTime = 24 * 60 * 60 * 1000;
+        // long expirationTime = 60 * 1000; // 1 minute (for testing)
+        long expirationTime = 24 * 60 * 60 * 1000; // 24 hours (for production)
         return Jwts.builder().issuer("Fancy Sticker").subject("JWT Token")
                 .claim("username", fetchedCustomer.getName())
                 .claim("email", fetchedCustomer.getEmail())
@@ -34,7 +38,7 @@ public class JwtUtil {
                 .claim("roles",
                         authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(",")))
                 .issuedAt(new java.util.Date())
-                .expiration(new java.util.Date((new java.util.Date().getTime() + 24 * 60 * 60 * 1000)))
+                .expiration(new java.util.Date((new java.util.Date().getTime() + expirationTime)))
                 .signWith(secretKey)
                 .compact();
     }
