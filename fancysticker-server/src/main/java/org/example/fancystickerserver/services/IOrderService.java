@@ -8,5 +8,5 @@ public interface IOrderService {
     void createOrder(OrderRequestDto orderRequestDto);
     ListAllOrdersResponseDto getAllOrders();
     ListAllOrdersResponseDto getAllPendingOrders();
-    Order updateOrderStatus(Long orderId, String newStatus);
+    Order updateOrderStatus(String orderId, String newStatus);
 }

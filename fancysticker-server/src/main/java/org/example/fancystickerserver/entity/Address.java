@@ -14,9 +14,9 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = "address")
 public class Address extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "address_id", nullable = false)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "address_id", nullable = false, columnDefinition = "VARCHAR(36)")
+    private String id;
 
     @NotNull
     @OneToOne(fetch = FetchType.LAZY, optional = false)

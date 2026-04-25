@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface IContactService {
     boolean saveContact(ContactRequestDto contactRequestDto);
-    Contact updateMessageStatus(Long messageId, String newStatus);
+    Contact updateMessageStatus(String messageId, String newStatus);
     ContactResponseDto getAllOpenMessages();
 }

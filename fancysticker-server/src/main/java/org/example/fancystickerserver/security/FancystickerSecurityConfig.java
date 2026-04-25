@@ -45,10 +45,10 @@ public class FancystickerSecurityConfig {
                 .authorizeHttpRequests(request -> {
                     publicPathsConfig.forEach(path -> request.requestMatchers(path).permitAll());
                     request.requestMatchers("/api/v1/admin/**").hasRole("ADMIN");
-                    request.requestMatchers("/fancysticker/actuator/**").hasRole("OPS_ENGINEER");
+                    request.requestMatchers("/fancysticker/actuator/**").hasRole("OPS_ENG");
                     request.requestMatchers("/swagger-ui/index.html/**", "/swagger-ui/**", "/v3/api-docs/**").hasAnyRole(
-                            "DEV_ENGINEER",
-                            "QA_ENGINEER");
+                            "DEV_ENG",
+                            "QA_ENG");
                     request.anyRequest().hasAnyRole("USER", "ADMIN");
                 })
                 .addFilterBefore(jwtTokenValidationFilter, BasicAuthenticationFilter.class)

@@ -1,5 +1,5 @@
 export interface Message {
-  messageId: number;
+  messageId: string;
   name: string;
   mobileNumber: string;
   email: string;

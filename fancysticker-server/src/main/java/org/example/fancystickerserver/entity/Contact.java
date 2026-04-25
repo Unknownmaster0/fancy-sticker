@@ -13,9 +13,9 @@ import lombok.Setter;
 @Table(name = "contacts")
 public class Contact extends BaseEntity{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "contact_id", nullable = false)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "contact_id", nullable = false, columnDefinition = "VARCHAR(36)")
+    private String id;
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;
