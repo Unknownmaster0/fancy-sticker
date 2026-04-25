@@ -15,9 +15,9 @@ import java.util.Set;
 @Table(name = "customers")
 public class Customer extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "customer_id", nullable = false)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "customer_id", nullable = false, columnDefinition = "VARCHAR(36)")
+    private String id;
 
     @Size(max = 100)
     @NotNull
@@ -42,7 +42,12 @@ public class Customer extends BaseEntity {
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
     private Address address;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "customer_id", nullable = false)
+    // many-to-many relationship with the roles table. Owning entity -- customer table
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "customer_roles",
+            joinColumns = @JoinColumn(name = "customer_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
     private Set<Role> roles = new LinkedHashSet<>();
 }

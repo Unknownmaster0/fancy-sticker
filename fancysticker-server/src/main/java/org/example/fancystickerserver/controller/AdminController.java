@@ -25,13 +25,13 @@ public class AdminController {
     }
 
     @PatchMapping("/orders/{orderId}/confirm")
-    public ResponseEntity<AdminOrderResponseDto> confirmOrder(@PathVariable Long orderId) {
+    public ResponseEntity<AdminOrderResponseDto> confirmOrder(@PathVariable String orderId) {
         iOrderService.updateOrderStatus(orderId, ApplicationConstants.ORDER_STATUS_CONFIRMED);
         return ResponseEntity.ok().body(new AdminOrderResponseDto("200", "Order confirmed successfully"));
     }
 
     @PatchMapping("/orders/{orderId}/cancel")
-    public ResponseEntity<AdminOrderResponseDto> cancelOrder(@PathVariable Long orderId) {
+    public ResponseEntity<AdminOrderResponseDto> cancelOrder(@PathVariable String orderId) {
         iOrderService.updateOrderStatus(orderId, ApplicationConstants.ORDER_STATUS_CANCELLED);
         return ResponseEntity.ok().body(new AdminOrderResponseDto("200", "Order cancelled successfully"));
     }
@@ -43,7 +43,7 @@ public class AdminController {
     }
 
     @PatchMapping("/messages/{messageId}/close")
-    public ResponseEntity<AdminMessageResponseDto> closeMessage(@PathVariable Long messageId) {
+    public ResponseEntity<AdminMessageResponseDto> closeMessage(@PathVariable String messageId) {
         Contact message = iContactService.updateMessageStatus(messageId, ApplicationConstants.MESSAGE_STATUS_CLOSED);
         return ResponseEntity.ok().body(new AdminMessageResponseDto("200", "Message closed successfully", null, null,
                 null, message.getId())); // message.getId() === messageId

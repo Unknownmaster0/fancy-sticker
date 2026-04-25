@@ -7,6 +7,7 @@ import org.example.fancystickerserver.dto.*;
 import org.example.fancystickerserver.entity.Customer;
 import org.example.fancystickerserver.entity.Role;
 import org.example.fancystickerserver.repository.CustomerRepository;
+import org.example.fancystickerserver.repository.RoleRepository;
 import org.example.fancystickerserver.utils.JwtUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final CustomerRepository customerRepository;
+    private final RoleRepository roleRepository;
     private final CompromisedPasswordChecker compromisedPasswordChecker;
 
     @PostMapping("/login")
@@ -110,12 +112,10 @@ public class AuthController {
         Customer customer = new Customer();
         BeanUtils.copyProperties(registerRequestDto, customer);
         customer.setPasswordHash(passwordEncoder.encode(registerRequestDto.getPassword()));
-        Role role = new Role();
-        role.setName("ROLE_USER");
-        customer.setRoles(Set.of(role));
+        roleRepository.findByName("ROLE_USER").ifPresent(role -> customer.setRoles(Set.of(role)));
         customerRepository.save(customer);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
 
     public ResponseEntity<LoginResponseDto> BuildLoginError(HttpStatus status, String message) {

@@ -9,9 +9,9 @@ const Orders = () => {
   const orders: Orders[] = useLoaderData();
   const { isDarkMode } = useTheme();
   const navigate = useNavigate();
-  const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
 
-  const toggleOrderExpand = (orderId: number) => {
+  const toggleOrderExpand = (orderId: string) => {
     setExpandedOrderId(expandedOrderId === orderId ? null : orderId);
   };
 

@@ -103,9 +103,9 @@ public class OrderServiceImplementation implements IOrderService {
     }
 
     @Override
-    public Order updateOrderStatus(Long orderId, String newStatus) {
+    public Order updateOrderStatus(String orderId, String newStatus) {
         // get the order by id
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order", "OrderId", orderId.toString()));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order", "OrderId", orderId));
         order.setOrderStatus(newStatus);
         return orderRepository.save(order);
     }

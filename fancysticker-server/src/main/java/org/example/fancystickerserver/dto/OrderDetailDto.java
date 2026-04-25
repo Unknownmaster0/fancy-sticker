@@ -5,7 +5,7 @@ import java.time.Instant;
 import java.util.List;
 
 public record OrderDetailDto(
-    Long orderId,
+    String orderId,
     BigDecimal totalPrice,
     String paymentStatus,
     String orderStatus,

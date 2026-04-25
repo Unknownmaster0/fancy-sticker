@@ -13,9 +13,9 @@ import java.math.BigDecimal;
 @Table(name = "order_items")
 public class OrderItem extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_item_id", nullable = false)
-    private Long orderItemId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "order_item_id", nullable = false, columnDefinition = "VARCHAR(36)")
+    private String orderItemId;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

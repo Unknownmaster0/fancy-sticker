@@ -6,6 +6,7 @@ import org.example.fancystickerserver.entity.Product;
 import org.example.fancystickerserver.repository.ProductRepository;
 import org.example.fancystickerserver.services.IProductService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class ProductServiceImplementation implements IProductService {
 
     private final ProductRepository productRepository;
 
+    @Cacheable("products")
     @Override
     public List<ProductDto> getProducts() {
         return productRepository.findAll()

@@ -15,9 +15,9 @@ import java.util.List;
 @Table(name = "orders")
 public class Order extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_id", nullable = false)
-    private Long orderId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "order_id", nullable = false, columnDefinition = "VARCHAR(36)")
+    private String orderId;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

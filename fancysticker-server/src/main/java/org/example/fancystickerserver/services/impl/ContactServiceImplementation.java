@@ -45,9 +45,9 @@ public class ContactServiceImplementation implements IContactService {
     }
 
     @Override
-    public Contact updateMessageStatus(Long messageId, String newStatus) {
+    public Contact updateMessageStatus(String messageId, String newStatus) {
         Contact contact = contactRepository.findById(messageId).orElseThrow(() -> new ResourceNotFoundException(
-                "Contact", "MessageId", messageId.toString()));
+                "Contact", "MessageId", messageId));
         contact.setStatus(newStatus);
         return contactRepository.save(contact);
     }
